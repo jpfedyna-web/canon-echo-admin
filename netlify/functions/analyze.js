@@ -5,7 +5,6 @@ const client = new Anthropic({
 });
 
 exports.handler = async (event, context) => {
-  // Handle CORS preflight
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -38,10 +37,10 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const analysisPrompt = `You are Canon Echo, an expert benefits analytics system. Analyze the following employee census data and provide actionable insights.
+    const analysisPrompt = `You are Canon Echo, an expert benefits analytics system. Analyze the census data and provide comprehensive workforce health intelligence.
 
 COMPANY CONTEXT:
-- Company Name: ${companyName || "Unknown"}
+- Company Name: ${companyName || "Unknown Company"}
 - Employee Count: ${employeeCount || "Unknown"}
 - Funding Type: ${fundingType || "Unknown"}
 - Industry: ${industry || "Unknown"}
@@ -49,103 +48,110 @@ COMPANY CONTEXT:
 CENSUS DATA:
 ${censusData}
 
-Provide a comprehensive analysis in the following JSON format:
+Provide your analysis as JSON:
+
 {
-  "executive_summary": "A 2-3 sentence overview of key findings",
-  "risk_score": {
-    "overall": <number 1-100>,
+  "executive_summary": "2-3 compelling sentences about key findings",
+  
+  "census_snapshot": {
+    "total_employees": <number>,
+    "total_dependents": <number>,
+    "total_covered_lives": <number>,
+    "average_employee_age": <number>,
+    "age_range": "<min> - <max>",
+    "gender_split": { "male_percentage": <number>, "female_percentage": <number> },
+    "dependent_ratio": <number>
+  },
+  
+  "generational_breakdown": {
+    "gen_z": { "count": <number>, "percentage": <number>, "key_insight": "insight" },
+    "millennials": { "count": <number>, "percentage": <number>, "key_insight": "insight" },
+    "gen_x": { "count": <number>, "percentage": <number>, "key_insight": "insight" },
+    "boomers": { "count": <number>, "percentage": <number>, "key_insight": "insight" }
+  },
+  
+  "risk_assessment": {
+    "overall_score": <1-100>,
     "category": "<Low|Medium|High|Critical>",
-    "trend": "<Improving|Stable|Declining>"
+    "trend": "<Improving|Stable|Declining>",
+    "rationale": "Why this score",
+    "top_risks": [
+      { "risk": "Risk name", "severity": "<High|Medium|Low>", "affected": "Who/how many", "mitigation": "How to address" }
+    ]
   },
-  "demographic_insights": {
-    "age_distribution": "Summary of age-related findings",
-    "gender_breakdown": "Summary of gender distribution",
-    "dependent_analysis": "Summary of dependent coverage patterns"
+  
+  "key_findings": [
+    { "finding": "What you found", "data_point": "The stat", "implication": "What it means", "opportunity": "How to act" }
+  ],
+  
+  "funding_analysis": {
+    "type": "${fundingType || "Unknown"}",
+    "fit_assessment": "How well this structure fits the population",
+    "opportunities": ["Opportunity 1", "Opportunity 2"],
+    "watch_items": ["Item to monitor"]
   },
+  
   "cost_drivers": [
+    { "driver": "Name", "impact": "<High|Medium|Low>", "description": "Why it matters", "action": "How to address" }
+  ],
+  
+  "action_plan": [
     {
-      "factor": "Name of cost driver",
-      "impact": "<High|Medium|Low>",
-      "description": "Brief explanation",
-      "recommendation": "Actionable suggestion"
+      "action_number": 1,
+      "title": "Action Title",
+      "rationale": "Why based on data",
+      "target_population": "Who this helps",
+      "estimated_eligible": <number>,
+      "tactics": [
+        { "tactic": "Name", "description": "What it is", "estimated_cost": "$X,XXX", "expected_outcome": "Result" }
+      ],
+      "funding_source": "Where money comes from",
+      "timeline": "When to do it"
     }
   ],
-  "opportunities": [
-    {
-      "title": "Opportunity name",
-      "potential_savings": "Estimated savings or impact",
-      "implementation": "How to capture this opportunity",
-      "priority": "<High|Medium|Low>"
-    }
+  
+  "market_intelligence": [
+    { "topic": "Topic", "insight": "What's happening", "impact": "How it affects client", "recommendation": "What to do" }
   ],
+  
   "recommendations": [
-    {
-      "action": "Specific recommended action",
-      "rationale": "Why this matters",
-      "timeline": "When to implement",
-      "expected_outcome": "What to expect"
-    }
+    { "priority": 1, "action": "What to do", "rationale": "Why", "timeline": "When", "investment": "Cost" }
   ],
-  "benchmarks": {
-    "vs_industry": "How this compares to industry norms",
-    "vs_size_peers": "How this compares to similar-sized companies"
-  },
-  "next_steps": [
-    "Immediate action item 1",
-    "Immediate action item 2",
-    "Immediate action item 3"
-  ]
+  
+  "next_steps": ["Step 1", "Step 2", "Step 3"],
+  
+  "closing_message": "Compelling call to action"
 }
 
-Return ONLY valid JSON. No markdown, no explanation, just the JSON object.`;
+Calculate ACTUAL numbers from census data. Be specific. Return ONLY valid JSON.`;
 
     const message = await client.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 4096,
-      messages: [
-        {
-          role: "user",
-          content: analysisPrompt,
-        },
-      ],
+      max_tokens: 8096,
+      messages: [{ role: "user", content: analysisPrompt }],
     });
 
-    const responseText =
-      message.content[0].type === "text" ? message.content[0].text : "";
+    const responseText = message.content[0].type === "text" ? message.content[0].text : "";
 
-    // Try to parse as JSON
     let findings;
     try {
-      findings = JSON.parse(responseText);
+      let cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      findings = JSON.parse(cleaned);
     } catch {
-      // If not valid JSON, wrap the response
-      findings = {
-        raw_analysis: responseText,
-        parse_error: true,
-      };
+      findings = { raw_analysis: responseText, parse_error: true };
     }
 
     return {
       statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        success: true,
-        findings: findings,
-        analyzed_at: new Date().toISOString(),
-      }),
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+      body: JSON.stringify({ success: true, findings: findings, analyzed_at: new Date().toISOString() }),
     };
   } catch (error) {
     console.error("Analysis error:", error);
     return {
       statusCode: 500,
       headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({
-        error: "Analysis failed",
-        message: error.message,
-      }),
+      body: JSON.stringify({ error: "Analysis failed", message: error.message }),
     };
   }
 };
