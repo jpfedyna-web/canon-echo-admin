@@ -64,33 +64,116 @@
         const AddClientForm = ({ onSubmit, onCancel }) => {
             const [formData, setFormData] = useState({ company_name: '', contact_name: '', contact_email: '', industry: '', funding_type: '', employee_count: '' });
             const handleSubmit = (e) => { e.preventDefault(); onSubmit({ ...formData, employee_count: formData.employee_count ? parseInt(formData.employee_count) : null }); };
-            return (<form onSubmit={handleSubmit} className="space-y-4"><div><label className="block text-sm font-medium text-slate-300 mb-1">Company Name *</label><input type="text" required value={formData.company_name} onChange={(e) => setFormData({...formData, company_name: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="Acme Corporation" /></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-slate-300 mb-1">Contact Name</label><input type="text" value={formData.contact_name} onChange={(e) => setFormData({...formData, contact_name: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="John Smith" /></div><div><label className="block text-sm font-medium text-slate-300 mb-1">Contact Email</label><input type="email" value={formData.contact_email} onChange={(e) => setFormData({...formData, contact_email: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="john@acme.com" /></div></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-slate-300 mb-1">Industry</label><input type="text" value={formData.industry} onChange={(e) => setFormData({...formData, industry: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="Technology" /></div><div><label className="block text-sm font-medium text-slate-300 mb-1">Funding Type</label><select value={formData.funding_type} onChange={(e) => setFormData({...formData, funding_type: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500"><option value="">Select...</option><option value="Fully Insured">Fully Insured</option><option value="Self-Funded">Self-Funded</option><option value="Level-Funded">Level-Funded</option><option value="ASO">ASO (Self-Funded)</option></select></div></div><div><label className="block text-sm font-medium text-slate-300 mb-1">Employee Count</label><input type="number" value={formData.employee_count} onChange={(e) => setFormData({...formData, employee_count: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="250" /></div><div className="flex gap-3 pt-4"><button type="button" onClick={onCancel} className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium">Cancel</button><button type="submit" className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium">Add Client</button></div></form>);
+            return (<form onSubmit={handleSubmit} className="space-y-4"><div><label className="block text-sm font-medium text-slate-300 mb-1">Company Name *</label><input type="text" required value={formData.company_name} onChange={(e) => setFormData({...formData, company_name: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="Acme Corporation" /></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-slate-300 mb-1">Contact Name</label><input type="text" value={formData.contact_name} onChange={(e) => setFormData({...formData, contact_name: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="John Smith" /></div><div><label className="block text-sm font-medium text-slate-300 mb-1">Contact Email</label><input type="email" value={formData.contact_email} onChange={(e) => setFormData({...formData, contact_email: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="john@acme.com" /></div></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm font-medium text-slate-300 mb-1">Industry</label><input type="text" value={formData.industry} onChange={(e) => setFormData({...formData, industry: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="Technology" /></div><div><label className="block text-sm font-medium text-slate-300 mb-1">Funding Type</label><select value={formData.funding_type} onChange={(e) => setFormData({...formData, funding_type: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500"><option value="">Select...</option><option value="Fully Insured">Fully Insured</option><option value="Self-Funded">Self-Funded</option><option value="Level-Funded">Level-Funded</option><option value="ASO (Self-Funded)">ASO (Self-Funded)</option></select></div></div><div><label className="block text-sm font-medium text-slate-300 mb-1">Employee Count</label><input type="number" value={formData.employee_count} onChange={(e) => setFormData({...formData, employee_count: e.target.value})} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="250" /></div><div className="flex gap-3 pt-4"><button type="button" onClick={onCancel} className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium">Cancel</button><button type="submit" className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium">Add Client</button></div></form>);
         };
         
-        // Generate Complete 11-Slide Executive Report HTML
+        // Generate Complete Executive Report HTML with all slides
         const generateFullReportHTML = (findings, client) => {
             const f = findings || {};
-            const cs = f.census_snapshot || {};
-            const ra = f.risk_assessment || {};
+            const cp = f.census_profile || {};
             const gen = f.generational_breakdown || {};
-            const employees = cs.total_employees || client?.employee_count || 200;
-            const dependents = cs.total_dependents || Math.round(employees * 1.4);
-            const totalLives = employees + dependents;
-            const avgAge = cs.average_age || 42;
-            const today = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            const fundingType = client?.funding_type || 'Self-Funded';
-            const isSelfFunded = fundingType.toLowerCase().includes('self') || fundingType.toLowerCase().includes('aso');
-            const riskScore = ra.score || 55;
-            const genZ = gen.gen_z_pct || 15;
-            const mill = gen.millennial_pct || 25;
-            const genX = gen.gen_x_pct || 35;
-            const boom = gen.boomer_pct || 25;
+            const ra = f.risk_assessment || {};
+            const cs = f.cancer_screening || {};
+            const fa = f.funding_analysis || {};
+            const ec = f.executive_concierge || {};
+            const ct = f.confidence_table || [];
+            const intel = f.industry_intel || [];
+            const actions = f.action_plan || [];
+            const closing = f.closing || {};
             
+            const employees = cp.total_employees || client?.employee_count || 200;
+            const dependents = cp.total_dependents || Math.round(employees * 1.4);
+            const totalLives = cp.total_covered_lives || employees + dependents;
+            const avgAge = cp.average_age || 42;
+            const today = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            const fundingType = client?.funding_type || fa.type || 'Self-Funded';
+            const isSelfFunded = fundingType.toLowerCase().includes('self') || fundingType.toLowerCase().includes('aso');
+            const riskScore = ra.overall_score || 55;
+            const riskColor = riskScore < 40 ? '#22c55e' : riskScore < 70 ? '#f59e0b' : '#ef4444';
+            
+            const genZ = gen.gen_z || { count: 0, percentage: 15, health_stats: [] };
+            const mill = gen.millennials || { count: 0, percentage: 25, health_stats: [] };
+            const genX = gen.gen_x || { count: 0, percentage: 35, health_stats: [] };
+            const boom = gen.boomers || { count: 0, percentage: 25, health_stats: [] };
+            
+            const wellnessFund = fa.wellness_fund || employees * 150;
+            const innovationFund = fa.innovation_fund || employees * 75;
+            const potentialSavings = fa.potential_savings || employees * 225;
+            const totalAvailable = fa.total_available || wellnessFund + innovationFund + potentialSavings;
+            
+            const screenings = cs.screenings || [
+                { type: "Colorectal", eligible_count: Math.round(employees * 0.4), early_survival: "91%", late_survival: "14%", eligible_criteria: "Ages 45-75" },
+                { type: "Breast", eligible_count: Math.round(employees * 0.22), early_survival: "99%", late_survival: "29%", eligible_criteria: "Women 40-74" },
+                { type: "Cervical", eligible_count: Math.round(employees * 0.25), early_survival: "92%", late_survival: "17%", eligible_criteria: "Women 21-65" },
+                { type: "Lung", eligible_count: Math.round(employees * 0.08), early_survival: "60%", late_survival: "6%", eligible_criteria: "20+ pack-year, 50-80" }
+            ];
+            
+            const defaultConfidence = [
+                { metric: "Employee demographics", value: "Age, gender from census", confidence: "actual", source: "Census file" },
+                { metric: "Generational distribution", value: "Calculated from birthdates", confidence: "actual", source: "Census data" },
+                { metric: "Screening eligibility", value: "Based on age/gender", confidence: "actual", source: "USPSTF guidelines" },
+                { metric: "Chronic disease prevalence", value: "32-44% estimated", confidence: "modeled", source: "CDC NHANES 2022" },
+                { metric: "Mental health prevalence", value: "24-32% estimated", confidence: "modeled", source: "NIMH 2022" },
+                { metric: "Individual health status", value: "Unknown", confidence: "requires_claims", source: "Need claims data" }
+            ];
+            const confidenceData = ct.length > 0 ? ct : defaultConfidence;
+            
+            const defaultIntel = [
+                { category: "Rx Pricing", headline: "Medicare Drug Negotiation Impact", insight: "CMS finalized prices for first 10 drugs (38-79% reductions). Commercial ripple effects within 2-3 years.", canon_position: "Discuss with PBM how Medicare reference pricing affects your contracts." },
+                { category: "Cost Trends", headline: "GLP-1s Driving 9-11% Pharmacy Trend", insight: "Medical trend 7-8%, pharmacy 9-11%—driven by GLP-1 utilization.", canon_position: "Cover GLP-1s with clinical guardrails. Tie to outcomes." },
+                { category: "PBM Reform", headline: "FTC Report: PBMs Under Scrutiny", insight: "FTC finds top PBMs engaged in cost-raising practices.", canon_position: isSelfFunded ? "You can renegotiate. Request rebate transparency." : "Monitor and work with carrier." },
+                { category: "Compliance", headline: "Mental Health Parity Enforcement", insight: "DOL MHPAEA rules require MH vs medical comparative analysis.", canon_position: "Request compliance docs from TPA before mid-2025." }
+            ];
+            const intelData = intel.length > 0 ? intel : defaultIntel;
+            
+            const defaultActions = [
+                { action_number: 1, title: "Cancer Screening Activation", rationale: `${Math.round(employees * 0.6)} screening opportunities identified`, funding_source: "Wellness Fund", tactics: [
+                    { name: "At-Home Colorectal Kits", description: "Mail FIT kits to employees 45-75", eligible_count: Math.round(employees * 0.4), estimated_cost: `$${Math.round(employees * 0.4 * 35).toLocaleString()}`, vendor_suggestion: "Cologuard, LetsGetChecked" },
+                    { name: "Mobile Mammography Event", description: "On-site screening for women 40-74", eligible_count: Math.round(employees * 0.22), estimated_cost: `$${Math.round(employees * 22).toLocaleString()}`, vendor_suggestion: "Alliance Mobile Health" },
+                    { name: "Birthday-Month Reminders", description: "Personalized screening outreach", eligible_count: employees, estimated_cost: `$${Math.round(employees * 15).toLocaleString()}`, vendor_suggestion: "Accolade, Quantum Health" }
+                ]},
+                { action_number: 2, title: "Diabetes Prevention Program", rationale: `Estimated ${Math.round(totalLives * 0.35)} prediabetic individuals`, funding_source: "Innovation Fund", tactics: [
+                    { name: "CDC-Recognized DPP", description: "16-week lifestyle program, 58% risk reduction", eligible_count: Math.round(employees * 0.3), estimated_cost: "$500/person", vendor_suggestion: "Omada Health, Vida Health" },
+                    { name: "Healthy Plates Challenge", description: "4-week nutrition competition", eligible_count: employees, estimated_cost: `$${Math.round(employees * 40).toLocaleString()}`, vendor_suggestion: "Virgin Pulse, Limeade" },
+                    { name: "CGM Pilot Program", description: "Glucose monitors for highest-risk", eligible_count: Math.round(employees * 0.1), estimated_cost: `$${Math.round(employees * 30).toLocaleString()}`, vendor_suggestion: "Levels, Nutrisense" }
+                ]},
+                { action_number: 3, title: "Mental Health Activation", rationale: "Gen Z 42% affected, EAP at 8% utilization", funding_source: "Wellness Fund", tactics: [
+                    { name: "Leadership 'It's OK' Campaign", description: "Senior leader shares personal story", eligible_count: employees, estimated_cost: "$1,500", vendor_suggestion: "One Mind at Work" },
+                    { name: "Text-Based Therapy", description: "Digital MH for Gen Z preference", eligible_count: Math.round(employees * (genZ.percentage || 15) / 100), estimated_cost: "$4-8 PEPM", vendor_suggestion: "Talkspace, Lyra Health" },
+                    { name: "Manager Training", description: "Mental health awareness workshop", eligible_count: Math.round(employees * 0.15), estimated_cost: `$${Math.round(employees * 25).toLocaleString()}`, vendor_suggestion: "Mental Health First Aid" }
+                ]}
+            ];
+            const actionData = actions.length > 0 ? actions : defaultActions;
+            
+            const defaultConcierge = {
+                headline: "Your Personalized Vendor Activation Plan",
+                recommendations: [
+                    { category: "Navigation & Advocacy", need: "Help employees find right care", top_picks: [
+                        { vendor: "Accolade", why: "High-touch support for complex populations", cost_range: "$8-15 PEPM" },
+                        { vendor: "Quantum Health", why: "Strong claims impact for self-funded", cost_range: "$6-12 PEPM" }
+                    ]},
+                    { category: "Mental Health", need: "Address 28-42% with anxiety/depression", top_picks: [
+                        { vendor: "Lyra Health", why: "Highest clinical quality", cost_range: "$7-12 PEPM" },
+                        { vendor: "Spring Health", why: "Fast access, strong ROI", cost_range: "$6-10 PEPM" }
+                    ]},
+                    { category: "Diabetes Prevention", need: "Reach 30-40% with prediabetes", top_picks: [
+                        { vendor: "Omada Health", why: "Original digital DPP, proven outcomes", cost_range: "$500/participant" },
+                        { vendor: "Virta Health", why: "Diabetes reversal program", cost_range: "$400/month" }
+                    ]},
+                    { category: "Cancer Screening", need: "Close preventive screening gaps", top_picks: [
+                        { vendor: "Color Health", why: "Comprehensive screening platform", cost_range: "$5-10 PEPM" },
+                        { vendor: "Cologuard", why: "At-home colorectal, high completion", cost_range: "$35-50/kit" }
+                    ]}
+                ],
+                next_steps: ec.next_steps || ["Schedule vendor intro calls", "Request ROI case studies", "Pilot with 10-15% of population", "Establish baseline metrics"]
+            };
+            const conciergeData = ec.recommendations ? ec : defaultConcierge;
+
             return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Workforce Health Intelligence | ${client?.company_name} | Canon Echo</title>
+<title>Workforce Health Intelligence | ${client?.company_name || 'Client'} | Canon Echo</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
@@ -112,10 +195,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#000;color:#fff}
 .mission-value .icon{font-size:32px;margin-bottom:16px}
 .mission-value h3{font-size:16px;font-weight:600;margin-bottom:8px}
 .mission-value p{font-size:14px;color:rgba(255,255,255,0.6);max-width:200px}
-.census-slide{background:#0f172a}
-.census-slide h2,.funding-slide h2,.gen-slide h2,.risk-slide h2,.action-slide h2,.intel-slide h2{font-size:14px;text-transform:uppercase;letter-spacing:4px;color:#64748b;margin-bottom:12px}
-.census-slide .headline,.funding-slide .headline,.gen-slide .headline,.risk-slide .headline,.action-slide .headline,.intel-slide .headline{font-size:42px;font-weight:800;margin-bottom:16px}
-.census-slide .subhead,.funding-slide .subhead,.intel-slide .subhead{font-size:16px;color:#94a3b8;margin-bottom:40px}
+.section-slide{background:#0f172a}
+.section-slide h2{font-size:14px;text-transform:uppercase;letter-spacing:4px;color:#64748b;margin-bottom:12px}
+.section-slide .headline{font-size:42px;font-weight:800;margin-bottom:16px}
+.section-slide .subhead{font-size:16px;color:#94a3b8;margin-bottom:40px}
 .census-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:40px}
 .census-stat{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:28px;text-align:center}
 .census-stat .value{font-size:48px;font-weight:800;margin-bottom:8px}
@@ -124,11 +207,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#000;color:#fff}
 .census-stat .value.green{color:#22c55e}
 .census-stat .label{font-size:14px;color:#94a3b8}
 .census-stat .detail{font-size:12px;color:#64748b;margin-top:8px}
-.census-insight-box{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:12px;padding:24px;display:flex;align-items:start;gap:16px}
-.census-insight-box .icon{font-size:24px;flex-shrink:0}
-.census-insight-box .content h4{font-size:15px;font-weight:600;margin-bottom:8px}
-.census-insight-box .content p{font-size:13px;color:#94a3b8;line-height:1.5}
-.funding-slide{background:#0f172a}
+.insight-box{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:12px;padding:24px;display:flex;align-items:start;gap:16px}
+.insight-box .icon{font-size:24px;flex-shrink:0}
+.insight-box .content h4{font-size:15px;font-weight:600;margin-bottom:8px}
+.insight-box .content p{font-size:13px;color:#94a3b8;line-height:1.5}
 .funding-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:32px;margin-bottom:24px}
 .funding-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
 .funding-type{font-size:20px;font-weight:700}
@@ -138,7 +220,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#000;color:#fff}
 .fund-box .fund-amount{font-size:28px;font-weight:700;color:#4ade80;margin-bottom:8px}
 .fund-box .fund-label{font-size:13px;color:#94a3b8;margin-bottom:8px}
 .fund-box .fund-desc{font-size:11px;color:#64748b}
-.gen-slide{background:#0f172a}
 .gen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .gen-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px}
 .gen-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
@@ -152,6 +233,23 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#000;color:#fff}
 .gen-insight{background:rgba(255,255,255,0.03);border-radius:8px;padding:12px;margin-bottom:8px}
 .gen-insight .insight-stat{font-size:20px;font-weight:700;color:#f59e0b;margin-bottom:4px}
 .gen-insight .insight-text{font-size:11px;color:#94a3b8;line-height:1.4}
+.cancer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:40px}
+.cancer-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:24px;text-align:center}
+.cancer-card .type{font-size:16px;font-weight:700;margin-bottom:16px;color:#f59e0b}
+.cancer-card .survival{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.cancer-card .survival .early{font-size:32px;font-weight:800;color:#22c55e}
+.cancer-card .survival .vs{font-size:12px;color:#64748b}
+.cancer-card .survival .late{font-size:32px;font-weight:800;color:#ef4444}
+.cancer-card .survival-label{font-size:11px;color:#64748b;margin-bottom:16px}
+.cancer-card .eligible{font-size:13px;color:#94a3b8}
+.cancer-card .eligible strong{color:#fff}
+.confidence-table{width:100%;border-collapse:collapse;margin-bottom:24px}
+.confidence-table th{text-align:left;padding:12px 16px;background:rgba(255,255,255,0.05);font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#64748b}
+.confidence-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px}
+.confidence-badge{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.confidence-badge.high{background:rgba(34,197,94,0.2);color:#4ade80}
+.confidence-badge.medium{background:rgba(245,158,11,0.2);color:#fbbf24}
+.confidence-badge.low{background:rgba(239,68,68,0.2);color:#f87171}
 .risk-slide{background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#0f172a 100%)}
 .risk-display{display:flex;align-items:center;gap:60px;margin-bottom:40px}
 .risk-circle{width:180px;height:180px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:8px solid}
@@ -161,8 +259,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#000;color:#fff}
 .risk-item{background:rgba(255,255,255,0.05);border-radius:12px;padding:20px;margin-bottom:16px}
 .risk-item h4{font-size:16px;font-weight:600;margin-bottom:8px}
 .risk-item p{font-size:13px;color:rgba(255,255,255,0.7)}
+.intel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.intel-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:24px}
+.intel-header{display:flex;justify-content:space-between;margin-bottom:12px}
+.intel-category{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#f59e0b}
+.intel-card h4{font-size:15px;font-weight:600;margin-bottom:12px}
+.intel-impact{font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:16px}
+.canon-position{font-size:12px;color:#60a5fa;padding:12px;background:rgba(59,130,246,0.1);border-radius:8px}
 .action-slide{background:#0f172a}
-.action-slide .headline{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.action-slide .headline{display:flex;align-items:center;gap:16px;font-size:36px;font-weight:800;margin-bottom:8px}
 .action-number{width:48px;height:48px;background:#f59e0b;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;flex-shrink:0}
 .action-slide .context{font-size:14px;color:#94a3b8;margin-bottom:30px}
 .funding-source{display:inline-block;margin-left:16px;padding:4px 12px;background:rgba(74,222,128,0.2);color:#4ade80;border-radius:20px;font-size:11px}
@@ -175,15 +280,20 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#000;color:#fff}
 .action-metric{background:rgba(255,255,255,0.05);border-radius:8px;padding:10px;text-align:center}
 .metric-value{font-size:18px;font-weight:700;color:#4ade80}
 .metric-label{font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase}
-.intel-slide{background:#0f172a}
-.intel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.intel-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:24px}
-.intel-header{display:flex;justify-content:space-between;margin-bottom:12px}
-.intel-category{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#f59e0b}
-.intel-date{font-size:11px;color:#64748b}
-.intel-card h4{font-size:15px;font-weight:600;margin-bottom:12px}
-.intel-impact{font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:16px}
-.canon-position{font-size:12px;color:#60a5fa;padding:12px;background:rgba(59,130,246,0.1);border-radius:8px}
+.vendor-tag{font-size:10px;color:#60a5fa;margin-top:8px}
+.concierge-slide{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%)}
+.concierge-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:30px}
+.concierge-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:24px}
+.concierge-card .cat{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#f59e0b;margin-bottom:8px}
+.concierge-card .need{font-size:14px;color:#94a3b8;margin-bottom:16px}
+.vendor-pick{background:rgba(255,255,255,0.03);border-radius:8px;padding:12px;margin-bottom:8px}
+.vendor-pick .vendor-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:4px}
+.vendor-pick .vendor-why{font-size:11px;color:#94a3b8}
+.vendor-pick .vendor-cost{font-size:11px;color:#4ade80;margin-top:4px}
+.next-steps-box{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:24px}
+.next-steps-box h4{font-size:14px;font-weight:600;color:#f59e0b;margin-bottom:16px}
+.next-steps-box ol{padding-left:20px}
+.next-steps-box li{font-size:13px;color:#e2e8f0;margin-bottom:8px}
 .cta-slide{background:linear-gradient(135deg,#1e3a5f 0%,#1e40af 100%);text-align:center}
 .cta-slide h2{font-size:44px;font-weight:800;margin-bottom:24px;line-height:1.2}
 .cta-slide p{font-size:18px;color:rgba(255,255,255,0.8);max-width:700px;margin:0 auto 16px auto;font-weight:300}
@@ -200,9 +310,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#000;color:#fff}
 
 <!-- SLIDE 1: COVER -->
 <div class="slide cover">
-<div class="company">${client?.company_name || 'Company'}</div>
+<div class="company">${client?.company_name || 'Client Company'}</div>
 <h1>Workforce Health<br><span>Intelligence</span></h1>
-<p class="subtitle">A data-driven view of your ${employees} employees + dependents</p>
+<p class="subtitle">A data-driven view of your ${employees.toLocaleString()} employees + dependents</p>
 <div class="funding-badge">${fundingType}</div>
 <div class="ai-tag">✦ AI-POWERED PATTERN ANALYSIS</div>
 <div class="data-date">Analysis Date: ${today} | Data: Census + Benchmarks</div>
@@ -221,146 +331,155 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#000;color:#fff}
 </div>
 
 <!-- SLIDE 3: CENSUS PROFILE -->
-<div class="slide census-slide">
+<div class="slide section-slide">
 <h2>Your Workforce at a Glance</h2>
 <div class="headline">What the Census Reveals</div>
 <div class="subhead">Before we see a single claim, your demographic data tells a powerful story</div>
 <div class="census-grid">
-<div class="census-stat"><div class="value blue">${employees}</div><div class="label">Enrolled Employees</div><div class="detail">+ estimated ${dependents} dependents</div></div>
-<div class="census-stat"><div class="value amber">${totalLives}</div><div class="label">Total Covered Lives</div><div class="detail">Your plan's full population</div></div>
+<div class="census-stat"><div class="value blue">${employees.toLocaleString()}</div><div class="label">Enrolled Employees</div><div class="detail">+ estimated ${dependents.toLocaleString()} dependents</div></div>
+<div class="census-stat"><div class="value amber">${totalLives.toLocaleString()}</div><div class="label">Total Covered Lives</div><div class="detail">Your plan's full population</div></div>
 <div class="census-stat"><div class="value green">${avgAge}</div><div class="label">Average Age</div><div class="detail">${avgAge > 42 ? 'Older than' : avgAge < 42 ? 'Younger than' : 'At'} industry avg (42)</div></div>
 </div>
-<div class="census-insight-box"><div class="icon">💡</div><div class="content"><h4>Key Census Insight</h4><p>${f.executive_summary || `Your workforce demographics reveal important patterns. With an average age of ${avgAge}, your population has specific health considerations that should guide benefits strategy and preventive care priorities.`}</p></div></div>
+<div class="insight-box"><div class="icon">💡</div><div class="content"><h4>Key Census Insight</h4><p>${cp.key_insight || f.executive_summary || `Your workforce demographics reveal important patterns. With an average age of ${avgAge}, your population has specific health considerations that should guide benefits strategy and preventive care priorities.`}</p></div></div>
 <div class="page-num">02</div>
 </div>
 
 <!-- SLIDE 4: FUNDING TYPE -->
-<div class="slide funding-slide">
+<div class="slide section-slide">
 <h2>Your Plan Structure</h2>
 <div class="headline">${fundingType}: ${isSelfFunded ? 'You Have Options' : 'Understanding Your Flexibility'}</div>
 <div class="funding-card">
 <div class="funding-header"><div class="funding-type">Available Resources for Health Improvement</div><div class="funding-badge-green">${isSelfFunded ? 'High Flexibility' : 'Standard Options'}</div></div>
 <div class="funding-grid">
-<div class="fund-box"><div class="fund-amount">$${Math.round(employees * 150).toLocaleString()}</div><div class="fund-label">Wellness Fund</div><div class="fund-desc">Screenings, challenges, education, incentives</div></div>
-<div class="fund-box"><div class="fund-amount">$${Math.round(employees * 75).toLocaleString()}</div><div class="fund-label">Innovation Fund</div><div class="fund-desc">Pilot programs, new vendors, technology</div></div>
-<div class="fund-box"><div class="fund-amount">$${Math.round(employees * 225).toLocaleString()}</div><div class="fund-label">Potential Savings</div><div class="fund-desc">From proactive health management</div></div>
+<div class="fund-box"><div class="fund-amount">$${Math.round(wellnessFund).toLocaleString()}</div><div class="fund-label">Wellness Fund</div><div class="fund-desc">Screenings, challenges, education, incentives</div></div>
+<div class="fund-box"><div class="fund-amount">$${Math.round(innovationFund).toLocaleString()}</div><div class="fund-label">Innovation Fund</div><div class="fund-desc">Pilot programs, new vendors, technology</div></div>
+<div class="fund-box"><div class="fund-amount">$${Math.round(potentialSavings).toLocaleString()}</div><div class="fund-label">Potential Savings</div><div class="fund-desc">From proactive health management</div></div>
 </div>
-<div style="margin-top:24px;padding:16px;background:rgba(74,222,128,0.1);border-radius:8px;text-align:center"><span style="font-size:14px;color:#4ade80"><strong>Total Available: $${Math.round(employees * 450).toLocaleString()}</strong> to invest in your people's health this year</span></div>
+<div style="margin-top:24px;padding:16px;background:rgba(74,222,128,0.1);border-radius:8px;text-align:center"><span style="font-size:14px;color:#4ade80"><strong>Total Available: $${Math.round(totalAvailable).toLocaleString()}</strong> to invest in your people's health this year</span></div>
 </div>
 <div class="page-num">03</div>
 </div>
 
 <!-- SLIDE 5: GENERATIONAL OVERVIEW -->
-<div class="slide gen-slide">
+<div class="slide section-slide">
 <h2>Your Workforce Profile</h2>
 <div class="headline">Four Generations. Different Risks. One Strategy.</div>
 <div class="gen-grid">
-<div class="gen-card genz"><div class="gen-header"><div class="gen-name">Gen Z</div><div class="gen-pct">${genZ}%</div></div><div class="gen-meta">~${Math.round(employees * genZ / 100)} employees | Ages 18-29</div><div class="gen-insight"><div class="insight-stat">42%</div><div class="insight-text">Report anxiety/depression—3x more likely to seek help IF they know where to go</div></div><div class="gen-insight"><div class="insight-stat">67%</div><div class="insight-text">Have no established PCP—aged off parents' insurance without establishing adult care</div></div></div>
-<div class="gen-card millennial"><div class="gen-header"><div class="gen-name">Millennials</div><div class="gen-pct">${mill}%</div></div><div class="gen-meta">~${Math.round(employees * mill / 100)} employees | Ages 30-44</div><div class="gen-insight"><div class="insight-stat">38%</div><div class="insight-text">Already prediabetic—metabolic disease arriving 10 years early</div></div><div class="gen-insight"><div class="insight-stat">52%</div><div class="insight-text">Skip preventive care—"I'll do it when things calm down"</div></div></div>
-<div class="gen-card genx"><div class="gen-header"><div class="gen-name">Gen X</div><div class="gen-pct">${genX}%</div></div><div class="gen-meta">~${Math.round(employees * genX / 100)} employees | Ages 45-60</div><div class="gen-insight"><div class="insight-stat">47%</div><div class="insight-text">Managing 2+ chronic conditions—the "triple threat" cohort</div></div><div class="gen-insight"><div class="insight-stat">28%</div><div class="insight-text">Overdue for cancer screening—where early detection matters most</div></div></div>
-<div class="gen-card boomer"><div class="gen-header"><div class="gen-name">Boomers</div><div class="gen-pct">${boom}%</div></div><div class="gen-meta">~${Math.round(employees * boom / 100)} employees | Ages 61+</div><div class="gen-insight"><div class="insight-stat">4.2</div><div class="insight-text">Average active prescriptions—23% on combinations requiring monitoring</div></div><div class="gen-insight"><div class="insight-stat">$47K</div><div class="insight-text">Average annual healthcare spend—but 40% is influenceable</div></div></div>
+<div class="gen-card genz"><div class="gen-header"><div class="gen-name">Gen Z</div><div class="gen-pct">${genZ.percentage || 15}%</div></div><div class="gen-meta">~${genZ.count || Math.round(employees * 0.15)} employees | Ages 18-29 | ${genZ.gender_split || '55% M / 45% F'}</div>${(genZ.health_stats || [{stat:'42%',insight:'Report anxiety/depression—3× more likely to seek help IF they know where'},{stat:'67%',insight:'Have no established PCP—aged off parents\' insurance'}]).slice(0,2).map(s => `<div class="gen-insight"><div class="insight-stat">${s.stat}</div><div class="insight-text">${s.insight}</div></div>`).join('')}</div>
+<div class="gen-card millennial"><div class="gen-header"><div class="gen-name">Millennials</div><div class="gen-pct">${mill.percentage || 25}%</div></div><div class="gen-meta">~${mill.count || Math.round(employees * 0.25)} employees | Ages 28-43 | ${mill.gender_split || '52% M / 48% F'}</div>${(mill.health_stats || [{stat:'38%',insight:'Already prediabetic—metabolic disease arriving 10 years early'},{stat:'52%',insight:'Skip preventive care—"I\'ll do it when things calm down"'}]).slice(0,2).map(s => `<div class="gen-insight"><div class="insight-stat">${s.stat}</div><div class="insight-text">${s.insight}</div></div>`).join('')}</div>
+<div class="gen-card genx"><div class="gen-header"><div class="gen-name">Gen X</div><div class="gen-pct">${genX.percentage || 35}%</div></div><div class="gen-meta">~${genX.count || Math.round(employees * 0.35)} employees | Ages 44-59 | ${genX.gender_split || '50% M / 50% F'}</div>${(genX.health_stats || [{stat:'47%',insight:'Managing 2+ chronic conditions—the "triple threat" cohort'},{stat:'28%',insight:'Overdue for cancer screening—where early detection matters most'}]).slice(0,2).map(s => `<div class="gen-insight"><div class="insight-stat">${s.stat}</div><div class="insight-text">${s.insight}</div></div>`).join('')}</div>
+<div class="gen-card boomer"><div class="gen-header"><div class="gen-name">Boomers</div><div class="gen-pct">${boom.percentage || 25}%</div></div><div class="gen-meta">~${boom.count || Math.round(employees * 0.25)} employees | Ages 60+ | ${boom.gender_split || '54% M / 46% F'}</div>${(boom.health_stats || [{stat:'4.2',insight:'Average active prescriptions—23% on combinations requiring monitoring'},{stat:'$47K',insight:'Average annual healthcare spend—but 40% is influenceable'}]).slice(0,2).map(s => `<div class="gen-insight"><div class="insight-stat">${s.stat}</div><div class="insight-text">${s.insight}</div></div>`).join('')}</div>
 </div>
 <div class="page-num">04</div>
 </div>
 
-<!-- SLIDE 6: RISK ASSESSMENT -->
+<!-- SLIDE 6: CANCER SCREENING -->
+<div class="slide section-slide">
+<h2>The Stakes Are Real</h2>
+<div class="headline">${cs.headline || 'Early detection changes everything.'}</div>
+<div class="cancer-grid">
+${screenings.map(s => `<div class="cancer-card"><div class="type">${s.type}</div><div class="survival"><span class="early">${s.early_survival}</span><span class="vs">vs</span><span class="late">${s.late_survival}</span></div><div class="survival-label">5-year survival</div><div class="eligible"><strong>~${s.eligible_count}</strong> ${s.eligible_criteria}</div></div>`).join('')}
+</div>
+<div style="text-align:center;font-size:16px;color:rgba(255,255,255,0.8)"><strong>Every screening is covered at 100%.</strong> The only barrier is awareness—and action.</div>
+<div class="page-num">05</div>
+</div>
+
+<!-- SLIDE 7: CONFIDENCE TABLE -->
+<div class="slide section-slide">
+<h2>What We Know vs. What We're Estimating</h2>
+<div class="headline">Transparency builds trust</div>
+<table class="confidence-table">
+<thead><tr><th>Metric</th><th>Value</th><th>Confidence</th><th>Source / Validation</th></tr></thead>
+<tbody>
+${confidenceData.map(c => `<tr><td>${c.metric}</td><td>${c.value}</td><td><span class="confidence-badge ${c.confidence === 'actual' ? 'high' : c.confidence === 'modeled' ? 'medium' : 'low'}">${c.confidence === 'actual' ? '✅ Actual Data' : c.confidence === 'modeled' ? '⚠️ Modeled' : '❓ Requires Claims'}</span></td><td>${c.source}</td></tr>`).join('')}
+</tbody>
+</table>
+<div style="padding:16px;background:rgba(255,255,255,0.03);border-radius:8px;text-align:center"><span style="font-size:13px;color:#94a3b8"><strong>To increase precision:</strong> Share claims data and this report transforms from directional to precise.</span></div>
+<div class="page-num">06</div>
+</div>
+
+<!-- SLIDE 8: RISK ASSESSMENT -->
 <div class="slide risk-slide">
 <h2>Population Health Risk</h2>
 <div class="headline" style="margin-bottom:40px">Risk Profile Assessment</div>
 <div class="risk-display">
-<div class="risk-circle" style="border-color:${riskScore < 40 ? '#22c55e' : riskScore < 70 ? '#f59e0b' : '#ef4444'}"><div class="score" style="color:${riskScore < 40 ? '#22c55e' : riskScore < 70 ? '#f59e0b' : '#ef4444'}">${riskScore}</div><div class="label">Risk Score</div></div>
+<div class="risk-circle" style="border-color:${riskColor}"><div class="score" style="color:${riskColor}">${riskScore}</div><div class="label">Risk Score</div></div>
 <div class="risk-details">
-<div class="risk-item"><h4>Risk Category: ${ra.category || (riskScore < 40 ? 'Low' : riskScore < 70 ? 'Medium' : 'High')}</h4><p>${ra.top_risk || 'Population health risks identified from demographic analysis. Key factors include age distribution, chronic disease prevalence, and preventive care gaps.'}</p></div>
-${f.cost_drivers?.slice(0,2).map(d => `<div class="risk-item"><h4>${d.driver}</h4><p>Impact: ${d.impact}${d.description ? '. ' + d.description : ''}</p></div>`).join('') || '<div class="risk-item"><h4>Chronic Disease Management</h4><p>Age-related conditions require proactive monitoring and intervention strategies.</p></div>'}
+<div class="risk-item"><h4>Category: ${ra.category || (riskScore < 40 ? 'Low' : riskScore < 70 ? 'Moderate' : 'Elevated')} | Trend: ${ra.trend_indicator || 'Stable'}</h4><p>${ra.score_rationale || 'Population health risks identified from demographic analysis. Key factors include age distribution, chronic disease prevalence, and preventive care gaps.'}</p></div>
+${(ra.top_risks || [{risk:'Chronic Disease Management',severity:'High',affected_population:'Gen X and Boomers',why_it_matters:'Unmanaged conditions drive 60% of claims costs'}]).slice(0,2).map(r => `<div class="risk-item"><h4>${r.risk} <span style="color:${r.severity === 'Critical' || r.severity === 'High' ? '#ef4444' : '#f59e0b'};font-size:12px;margin-left:8px">[${r.severity}]</span></h4><p>${r.affected_population}${r.why_it_matters ? '. ' + r.why_it_matters : ''}</p></div>`).join('')}
 </div>
-</div>
-<div class="page-num">05</div>
-</div>
-
-<!-- SLIDE 7: INDUSTRY INTEL -->
-<div class="slide intel-slide">
-<h2>Industry Intelligence</h2>
-<div class="headline">What's Happening in Healthcare</div>
-<div class="subhead">Our position on developments affecting your plan | Updated ${today}</div>
-<div class="intel-grid">
-<div class="intel-card"><div class="intel-header"><span class="intel-category">Rx Pricing</span><span class="intel-date">2025</span></div><h4>Medicare Drug Negotiation: Commercial Impact Coming</h4><div class="intel-impact">CMS finalized prices for first 10 drugs (38-79% reductions). Commercial market will feel ripple effects within 2-3 years.</div><div class="canon-position"><strong>Our Position:</strong> Proactively discuss with your PBM how Medicare reference pricing will affect commercial contracts.</div></div>
-<div class="intel-card"><div class="intel-header"><span class="intel-category">Cost Trends</span><span class="intel-date">2025</span></div><h4>GLP-1s Driving 9-11% Pharmacy Trend</h4><div class="intel-impact">Medical trend 7-8%, but pharmacy is 9-11%—driven almost entirely by GLP-1 utilization for obesity and diabetes.</div><div class="canon-position"><strong>Our Position:</strong> GLP-1s need clinically appropriate coverage WITH guardrails. Tie coverage to outcomes.</div></div>
-<div class="intel-card"><div class="intel-header"><span class="intel-category">PBM Reform</span><span class="intel-date">2025</span></div><h4>FTC Report: PBMs Under Scrutiny</h4><div class="intel-impact">FTC interim report finds top 3 PBMs engaged in practices that raise costs. Several states advancing reform bills.</div><div class="canon-position"><strong>Our Position:</strong> ${isSelfFunded ? 'As a self-funded group, you can renegotiate terms. Request rebate transparency immediately.' : 'Monitor developments and discuss options with your carrier.'}</div></div>
-<div class="intel-card"><div class="intel-header"><span class="intel-category">Compliance</span><span class="intel-date">2025</span></div><h4>Mental Health Parity Enforcement Tightening</h4><div class="intel-impact">DOL finalized MHPAEA rules requiring comparative analysis of MH vs. medical coverage. Enforcement begins 2025.</div><div class="canon-position"><strong>Our Position:</strong> Request MHPAEA compliance documentation from your TPA before mid-2025.</div></div>
-</div>
-<div class="page-num">06</div>
-</div>
-
-<!-- SLIDE 8: ACTION 1 -->
-<div class="slide action-slide">
-<h2>Turning Insight Into Action</h2>
-<div class="headline"><div class="action-number">1</div>Cancer Screening Activation</div>
-<div class="context">Based on demographics: ~${Math.round(employees * 0.6)} screening opportunities across your workforce<span class="funding-source">Wellness Fund</span></div>
-<div class="action-grid">
-<div class="action-card"><div class="action-label">Action A</div><h3>At-Home Colorectal Kits</h3><div class="action-detail">Mail FIT kits to all employees aged 45-75. No appointment needed. Completed at home in 5 minutes.</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">${Math.round(employees * 0.4)}+</div><div class="metric-label">Eligible</div></div><div class="action-metric"><div class="metric-value">$${Math.round(employees * 0.4 * 35).toLocaleString()}</div><div class="metric-label">Est. Cost</div></div></div></div>
-<div class="action-card"><div class="action-label">Action B</div><h3>Mobile Mammography Event</h3><div class="action-detail">On-site mammography unit. 15-minute appointments during work hours. No travel, no scheduling hassle.</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">~${Math.round(employees * 0.22)}</div><div class="metric-label">Women Eligible</div></div><div class="action-metric"><div class="metric-value">$${Math.round(employees * 22).toLocaleString()}</div><div class="metric-label">Est. Cost</div></div></div></div>
-<div class="action-card"><div class="action-label">Action C</div><h3>Birthday-Month Reminders</h3><div class="action-detail">Personalized outreach with age/gender-specific screenings due. Concierge scheduling support included.</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">12</div><div class="metric-label">Monthly Campaigns</div></div><div class="action-metric"><div class="metric-value">$${Math.round(employees * 15).toLocaleString()}</div><div class="metric-label">Est. Cost</div></div></div></div>
 </div>
 <div class="page-num">07</div>
 </div>
 
-<!-- SLIDE 9: ACTION 2 -->
-<div class="slide action-slide">
-<h2>Turning Insight Into Action</h2>
-<div class="headline"><div class="action-number">2</div>Diabetes Prevention Program</div>
-<div class="context">Estimated ${Math.round(totalLives * 0.15)}-${Math.round(totalLives * 0.2)} prediabetic individuals across employees + dependents<span class="funding-source">Innovation Fund</span></div>
-<div class="action-grid">
-<div class="action-card"><div class="action-label">Action A</div><h3>CDC-Recognized DPP</h3><div class="action-detail">16-week lifestyle program with group coaching. Proven to reduce diabetes risk by 58% (RCT evidence).</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">58%</div><div class="metric-label">Risk Reduction</div></div><div class="action-metric"><div class="metric-value">$500</div><div class="metric-label">Per Person</div></div></div></div>
-<div class="action-card"><div class="action-label">Action B</div><h3>"Healthy Plates" Challenge</h3><div class="action-detail">4-week company-wide nutrition challenge. Team competition, subsidized meal kit partnership, weekly prizes.</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">60%</div><div class="metric-label">Expected Participation</div></div><div class="action-metric"><div class="metric-value">$${Math.round(employees * 40).toLocaleString()}</div><div class="metric-label">Est. Cost</div></div></div></div>
-<div class="action-card"><div class="action-label">Action C</div><h3>CGM Pilot Program</h3><div class="action-detail">Continuous glucose monitors for highest-risk prediabetics. Real-time feedback on how food affects blood sugar.</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">${Math.round(employees * 0.1)}</div><div class="metric-label">Pilot Size</div></div><div class="action-metric"><div class="metric-value">$${Math.round(employees * 30).toLocaleString()}</div><div class="metric-label">3-Month Pilot</div></div></div></div>
+<!-- SLIDE 9: INDUSTRY INTEL -->
+<div class="slide section-slide">
+<h2>Industry Intelligence</h2>
+<div class="headline">What's Happening in Healthcare</div>
+<div class="subhead">Our position on developments affecting your plan | Updated ${today}</div>
+<div class="intel-grid">
+${intelData.slice(0,4).map(i => `<div class="intel-card"><div class="intel-header"><span class="intel-category">${i.category}</span></div><h4>${i.headline}</h4><div class="intel-impact">${i.insight}</div><div class="canon-position"><strong>Our Position:</strong> ${i.canon_position}</div></div>`).join('')}
 </div>
 <div class="page-num">08</div>
 </div>
 
-<!-- SLIDE 10: ACTION 3 -->
+<!-- SLIDES 10-12: ACTION PLANS -->
+${actionData.slice(0,3).map((action, idx) => `
 <div class="slide action-slide">
 <h2>Turning Insight Into Action</h2>
-<div class="headline"><div class="action-number">3</div>Mental Health Activation</div>
-<div class="context">Gen Z 42% affected | Gen X caregiver burnout | Current EAP utilization ~8%<span class="funding-source">Wellness Fund</span></div>
+<div class="headline"><div class="action-number">${action.action_number || idx + 1}</div>${action.title}</div>
+<div class="context">${action.rationale}<span class="funding-source">${action.funding_source || 'Wellness Fund'}</span></div>
 <div class="action-grid">
-<div class="action-card"><div class="action-label">Action A</div><h3>Leadership "It's OK" Campaign</h3><div class="action-detail">Senior leader shares personal story via video or town hall. Single most effective way to destigmatize. One-click EAP link in follow-up.</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">2x</div><div class="metric-label">Expected EAP Uptick</div></div><div class="action-metric"><div class="metric-value">$1,500</div><div class="metric-label">Est. Cost</div></div></div></div>
-<div class="action-card"><div class="action-label">Action B</div><h3>Text-Based Therapy Option</h3><div class="action-detail">Digital MH platform partnership. Texting-first approach matches how Gen Z communicates. Removes phone-call barrier.</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">70%</div><div class="metric-label">Prefer Text</div></div><div class="action-metric"><div class="metric-value">$4/PEPY</div><div class="metric-label">Platform Cost</div></div></div></div>
-<div class="action-card"><div class="action-label">Action C</div><h3>Manager Training Workshop</h3><div class="action-detail">2-hour session for all people managers. How to notice signs, how to ask, how to connect to resources.</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">100%</div><div class="metric-label">Mgr Completion</div></div><div class="action-metric"><div class="metric-value">$${Math.round(employees * 25).toLocaleString()}</div><div class="metric-label">Est. Cost</div></div></div></div>
+${(action.tactics || []).slice(0,3).map((t, i) => `<div class="action-card"><div class="action-label">Action ${String.fromCharCode(65 + i)}</div><h3>${t.name}</h3><div class="action-detail">${t.description}</div><div class="action-metrics"><div class="action-metric"><div class="metric-value">${t.eligible_count || '—'}</div><div class="metric-label">Eligible</div></div><div class="action-metric"><div class="metric-value">${t.estimated_cost || '—'}</div><div class="metric-label">Est. Cost</div></div></div><div class="vendor-tag">💡 ${t.vendor_suggestion || 'Contact us for recommendations'}</div></div>`).join('')}
 </div>
-<div class="page-num">09</div>
+<div class="page-num">${9 + idx}</div>
+</div>
+`).join('')}
+
+<!-- SLIDE 13: EXECUTIVE CONCIERGE -->
+<div class="slide concierge-slide">
+<h2>Executive Concierge</h2>
+<div class="headline" style="font-size:36px;font-weight:800;margin-bottom:8px">${conciergeData.headline || 'Your Personalized Vendor Activation Plan'}</div>
+<div class="subhead" style="margin-bottom:30px">Based on your specific workforce demographics, here are the vendors best suited to your needs:</div>
+<div class="concierge-grid">
+${(conciergeData.recommendations || []).slice(0,4).map(rec => `<div class="concierge-card"><div class="cat">${rec.category}</div><div class="need">${rec.need}</div>${(rec.top_picks || []).slice(0,2).map(v => `<div class="vendor-pick"><div class="vendor-name">${v.vendor}</div><div class="vendor-why">${v.why}</div><div class="vendor-cost">${v.cost_range}</div></div>`).join('')}</div>`).join('')}
+</div>
+<div class="next-steps-box"><h4>Recommended Next Steps</h4><ol>${(conciergeData.next_steps || ['Schedule vendor intro calls','Request ROI case studies','Pilot with 10-15%','Establish baseline metrics']).map(s => `<li>${s}</li>`).join('')}</ol></div>
+<div class="page-num">12</div>
 </div>
 
-<!-- SLIDE 11: CTA -->
+<!-- SLIDE 14: CTA -->
 <div class="slide cta-slide">
-<h2>The Patterns Are Clear.<br>The Funds Are Available.<br>The Path Is Ready.</h2>
-<p>With $${Math.round(employees * 450).toLocaleString()} in wellness, innovation, and potential savings—plus the flexibility of your ${fundingType} structure—you have the resources to act on every insight in this report.</p>
-<p class="cta-mission">Putting the Human back in Human Capital.</p>
+<h2>${closing.headline || 'The Patterns Are Clear.<br>The Funds Are Available.<br>The Path Is Ready.'}</h2>
+<p>${closing.message || `With $${Math.round(totalAvailable).toLocaleString()} in available resources and the flexibility of your ${fundingType} structure, you have everything needed to act on these insights.`}</p>
+<p class="cta-mission">${closing.tagline || 'Putting the Human back in Human Capital.'}</p>
 <div class="cta-buttons">
 <button class="cta-btn primary">Let's Build Your Action Plan</button>
 <button class="cta-btn secondary">Request Claims Data Analysis</button>
 </div>
-<div class="page-num">10</div>
+<div class="page-num">13</div>
 </div>
 
 </body>
 </html>`;
         };
         
-        // Summary View
+        // Summary View Component
         const SummaryView = ({ findings }) => {
             const f = findings || {};
             const ra = f.risk_assessment || {};
+            const ec = f.executive_concierge || {};
             return (
                 <div className="space-y-4">
                     {f.executive_summary && <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-4"><h4 className="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-2">Executive Summary</h4><p className="text-white">{f.executive_summary}</p></div>}
-                    {ra.score && <div className="bg-slate-900/50 rounded-xl p-4"><h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Risk Assessment</h4><div className="flex items-center gap-6"><div className="text-center"><div className={`text-4xl font-bold ${ra.score < 40 ? 'text-green-400' : ra.score < 70 ? 'text-amber-400' : 'text-red-400'}`}>{ra.score}</div><div className="text-slate-500 text-sm">Risk Score</div></div><div className="flex-1 space-y-2"><div className="flex justify-between text-sm"><span className="text-slate-400">Category</span><span className="text-white">{ra.category || 'Medium'}</span></div><div className="flex justify-between text-sm"><span className="text-slate-400">Top Risk</span><span className="text-white">{ra.top_risk || '—'}</span></div></div></div></div>}
-                    {f.recommendations?.length > 0 && <div className="bg-slate-900/50 rounded-xl p-4"><h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Recommendations</h4><div className="space-y-2">{f.recommendations.slice(0,3).map((rec, i) => <div key={i} className="bg-slate-800/50 rounded-lg p-3"><p className="text-white font-medium">{rec.action}</p><p className="text-slate-400 text-sm">{rec.timeline}</p></div>)}</div></div>}
-                    {f.next_steps?.length > 0 && <div className="bg-slate-900/50 rounded-xl p-4"><h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Next Steps</h4><ul className="space-y-2">{f.next_steps.map((step, i) => <li key={i} className="flex items-start gap-3"><span className="w-5 h-5 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center text-xs font-bold">{i+1}</span><span className="text-slate-300 text-sm">{step}</span></li>)}</ul></div>}
+                    {ra.overall_score && <div className="bg-slate-900/50 rounded-xl p-4"><h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Risk Assessment</h4><div className="flex items-center gap-6"><div className="text-center"><div className={`text-4xl font-bold ${ra.overall_score < 40 ? 'text-green-400' : ra.overall_score < 70 ? 'text-amber-400' : 'text-red-400'}`}>{ra.overall_score}</div><div className="text-slate-500 text-sm">Risk Score</div></div><div className="flex-1 space-y-2"><div className="flex justify-between text-sm"><span className="text-slate-400">Category</span><span className="text-white">{ra.category || 'Moderate'}</span></div><div className="flex justify-between text-sm"><span className="text-slate-400">Trend</span><span className="text-white">{ra.trend_indicator || 'Stable'}</span></div></div></div></div>}
+                    {f.action_plan?.length > 0 && <div className="bg-slate-900/50 rounded-xl p-4"><h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Action Plan</h4><div className="space-y-2">{f.action_plan.slice(0,3).map((a, i) => <div key={i} className="bg-slate-800/50 rounded-lg p-3"><div className="flex items-center gap-3"><span className="w-6 h-6 bg-amber-500 text-black rounded-full flex items-center justify-center text-xs font-bold">{a.action_number || i+1}</span><span className="text-white font-medium">{a.title}</span></div></div>)}</div></div>}
+                    {ec.recommendations?.length > 0 && <div className="bg-slate-900/50 rounded-xl p-4"><h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Executive Concierge</h4><div className="space-y-2">{ec.recommendations.slice(0,3).map((r, i) => <div key={i} className="bg-slate-800/50 rounded-lg p-3"><p className="text-amber-400 text-xs uppercase tracking-wide mb-1">{r.category}</p><p className="text-white text-sm">{r.top_picks?.[0]?.vendor} — {r.top_picks?.[0]?.why}</p></div>)}</div></div>}
                 </div>
             );
         };
         
-        // Upload & Analyze
+        // Upload & Analyze Component
         const UploadAnalyze = ({ client, onComplete, onCancel }) => {
             const [dragOver, setDragOver] = useState(false);
             const [file, setFile] = useState(null);
@@ -386,7 +505,7 @@ ${f.cost_drivers?.slice(0,2).map(d => `<div class="risk-item"><h4>${d.driver}</h
                     const { data: uploadData, error: uploadError } = await supabase.from('uploads').insert([{ client_id: client.id, file_name: file.name, file_type: file.type || 'text/csv', file_url: 'local', status: 'analyzing' }]).select().single();
                     if (uploadError) throw uploadError;
                     const response = await fetch('/.netlify/functions/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ censusData: csvString, companyName: client.company_name, employeeCount: client.employee_count, fundingType: client.funding_type, industry: client.industry }) });
-                    if (!response.ok) throw new Error('Analysis request failed');
+                    if (!response.ok) throw new Error('Analysis failed - ' + response.status);
                     const result = await response.json();
                     if (!result.success) throw new Error(result.message || 'Analysis failed');
                     await supabase.from('uploads').update({ status: 'complete' }).eq('id', uploadData.id);
@@ -405,19 +524,18 @@ ${f.cost_drivers?.slice(0,2).map(d => `<div class="risk-item"><h4>${d.driver}</h
                                 <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" onChange={(e) => processFile(e.target.files[0])} className="hidden" />
                                 <div className="text-slate-400 mb-3">{Icons.file}</div>
                                 <p className="text-white font-medium mb-1">{file ? file.name : 'Drop census file here'}</p>
-                                <p className="text-slate-500 text-sm">{file ? `${csvData?.length || 0} rows` : 'CSV or Excel'}</p>
+                                <p className="text-slate-500 text-sm">{file ? `${csvData?.length || 0} rows loaded` : 'CSV or Excel'}</p>
                             </div>
-                            {csvData?.length > 0 && <div className="bg-slate-900/50 rounded-xl p-4"><p className="text-slate-300 text-sm">{csvData.length} rows loaded</p></div>}
                             {error && <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-400 text-sm">{error}</div>}
-                            <div className="flex gap-3"><button onClick={onCancel} className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium">Cancel</button><button onClick={runAnalysis} disabled={!csvData || analyzing} className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-600 disabled:cursor-not-allowed rounded-lg font-medium flex items-center justify-center gap-2">{analyzing ? <>{Icons.loader} Analyzing...</> : <>{Icons.sparkles} Run Analysis</>}</button></div>
+                            <div className="flex gap-3"><button onClick={onCancel} className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium">Cancel</button><button onClick={runAnalysis} disabled={!csvData || analyzing} className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-600 disabled:cursor-not-allowed rounded-lg font-medium flex items-center justify-center gap-2">{analyzing ? <>{Icons.loader} Analyzing (up to 25s)...</> : <>{Icons.sparkles} Run Analysis</>}</button></div>
                         </>
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex bg-slate-800 rounded-lg p-1"><button onClick={() => setViewMode('summary')} className={`px-4 py-2 rounded-md text-sm font-medium ${viewMode === 'summary' ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>Summary</button><button onClick={() => setViewMode('full')} className={`px-4 py-2 rounded-md text-sm font-medium ${viewMode === 'full' ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>Full Report</button></div>
-                                <button onClick={downloadReport} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-sm font-medium">{Icons.download} Download Full Report</button>
+                                <button onClick={downloadReport} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-sm font-medium">{Icons.download} Download Report</button>
                             </div>
-                            <div className="max-h-[60vh] overflow-y-auto">{viewMode === 'summary' ? <SummaryView findings={results} /> : <div className="bg-slate-900 rounded-xl p-6 text-center"><p className="text-white mb-4">The full 11-slide executive report is ready!</p><p className="text-slate-400 text-sm mb-4">Click "Download Full Report" to get the complete presentation including:</p><ul className="text-slate-300 text-sm text-left max-w-md mx-auto space-y-1"><li>• Cover slide with company branding</li><li>• Mission & values</li><li>• Census profile with key stats</li><li>• Funding analysis & budget</li><li>• Generational breakdown</li><li>• Risk assessment</li><li>• Industry intelligence</li><li>• 3 detailed action plans</li><li>• Call to action</li></ul></div>}</div>
+                            <div className="max-h-[60vh] overflow-y-auto">{viewMode === 'summary' ? <SummaryView findings={results} /> : <div className="bg-slate-900 rounded-xl p-6 text-center"><p className="text-white mb-4">Your complete 13-slide executive report is ready!</p><ul className="text-slate-300 text-sm text-left max-w-md mx-auto space-y-1"><li>✓ Cover + Mission</li><li>✓ Census Profile</li><li>✓ Funding Analysis</li><li>✓ Generational Breakdown</li><li>✓ Cancer Screening (survival rates)</li><li>✓ Confidence Table</li><li>✓ Risk Assessment</li><li>✓ Industry Intelligence</li><li>✓ 3 Action Plans with Vendor Recommendations</li><li>✓ Executive Concierge</li><li>✓ Call to Action</li></ul><p className="text-amber-400 text-sm mt-4">Click "Download Report" to get the full presentation</p></div>}</div>
                             <button onClick={onComplete} className="w-full px-4 py-2.5 bg-green-600 hover:bg-green-500 rounded-lg font-medium">Done</button>
                         </div>
                     )}
@@ -425,25 +543,24 @@ ${f.cost_drivers?.slice(0,2).map(d => `<div class="risk-item"><h4>${d.driver}</h
             );
         };
         
-        // Analysis Detail
+        // Analysis Detail Slide-over
         const AnalysisDetail = ({ analysis, client, onClose }) => {
-            const [viewMode, setViewMode] = useState('summary');
             const f = analysis.findings || {};
-            const downloadReport = () => { const html = generateFullReportHTML(f, client || { company_name: 'Client', funding_type: 'Self-Funded' }); const blob = new Blob([html], { type: 'text/html' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Canon_Echo_Report.html`; a.click(); };
+            const downloadReport = () => { const html = generateFullReportHTML(f, client); const blob = new Blob([html], { type: 'text/html' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Canon_Echo_Report.html`; a.click(); };
             return (
                 <div className="fixed inset-0 z-50 flex"><div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
-                    <div className="relative ml-auto w-full max-w-4xl bg-slate-850 border-l border-slate-700 h-full overflow-hidden animate-fade-in flex flex-col">
-                        <div className="p-5 border-b border-slate-700">
-                            <div className="flex items-center justify-between mb-4"><div><h2 className="text-xl font-bold text-white">Analysis Results</h2><p className="text-slate-400 text-sm mono">{new Date(analysis.created_at).toLocaleString()}</p></div><button onClick={onClose} className="p-2 hover:bg-slate-700 rounded-lg">{Icons.close}</button></div>
-                            <div className="flex items-center justify-between"><div className="flex bg-slate-800 rounded-lg p-1"><button onClick={() => setViewMode('summary')} className={`px-4 py-2 rounded-md text-sm font-medium ${viewMode === 'summary' ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>Summary</button><button onClick={() => setViewMode('full')} className={`px-4 py-2 rounded-md text-sm font-medium ${viewMode === 'full' ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>Full Report</button></div><button onClick={downloadReport} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-sm font-medium">{Icons.download} Download</button></div>
+                    <div className="relative ml-auto w-full max-w-4xl bg-slate-850 border-l border-slate-700 h-full overflow-hidden flex flex-col animate-fade-in">
+                        <div className="p-5 border-b border-slate-700 flex items-center justify-between">
+                            <div><h2 className="text-xl font-bold text-white">Analysis Results</h2><p className="text-slate-400 text-sm">{new Date(analysis.created_at).toLocaleString()}</p></div>
+                            <div className="flex items-center gap-3"><button onClick={downloadReport} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-sm font-medium">{Icons.download} Download</button><button onClick={onClose} className="p-2 hover:bg-slate-700 rounded-lg">{Icons.close}</button></div>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-5">{viewMode === 'summary' ? <SummaryView findings={f} /> : <div className="bg-slate-900 rounded-xl p-6 text-center"><p className="text-white mb-4">Click "Download" to get the complete 11-slide executive presentation.</p></div>}</div>
+                        <div className="flex-1 overflow-y-auto p-5"><SummaryView findings={f} /></div>
                     </div>
                 </div>
             );
         };
         
-        // Client Detail
+        // Client Detail Slide-over
         const ClientDetail = ({ client, uploads, analyses, onClose, onUploadAnalyze }) => {
             const clientAnalyses = analyses.filter(a => a.client_id === client.id);
             const [selectedAnalysis, setSelectedAnalysis] = useState(null);
@@ -453,8 +570,8 @@ ${f.cost_drivers?.slice(0,2).map(d => `<div class="risk-item"><h4>${d.driver}</h
                         <div className="sticky top-0 bg-slate-850 border-b border-slate-700 p-5 flex items-center justify-between"><div><h2 className="text-xl font-bold text-white">{client.company_name}</h2><p className="text-slate-400 text-sm">{client.industry || 'No industry'} • {client.funding_type || 'No funding type'}</p></div><button onClick={onClose} className="p-2 hover:bg-slate-700 rounded-lg">{Icons.close}</button></div>
                         <div className="p-5 space-y-6">
                             <button onClick={() => onUploadAnalyze(client)} className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl font-medium flex items-center justify-center gap-2">{Icons.sparkles} Upload Census & Run Analysis</button>
-                            <div className="bg-slate-900/50 rounded-xl p-4"><h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Contact</h3><div className="space-y-2"><div className="flex justify-between"><span className="text-slate-400">Name</span><span className="text-white">{client.contact_name || '—'}</span></div><div className="flex justify-between"><span className="text-slate-400">Email</span><span className="text-white">{client.contact_email || '—'}</span></div><div className="flex justify-between"><span className="text-slate-400">Employees</span><span className="text-white">{client.employee_count?.toLocaleString() || '—'}</span></div></div></div>
-                            <div><h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Analyses ({clientAnalyses.length})</h3>{clientAnalyses.length === 0 ? <div className="bg-slate-900/50 rounded-xl p-6 text-center text-slate-500">No analyses yet</div> : <div className="space-y-2">{clientAnalyses.map(a => <div key={a.id} className="bg-slate-900/50 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-800/50" onClick={() => setSelectedAnalysis(a)}><div><p className="text-white font-medium">{a.findings?.executive_summary?.substring(0,50) || 'Analysis'}...</p><p className="text-slate-500 text-sm mono">{new Date(a.created_at).toLocaleDateString()}</p></div><div className="flex items-center gap-2"><StatusBadge status={a.status} />{Icons.eye}</div></div>)}</div>}</div>
+                            <div className="bg-slate-900/50 rounded-xl p-4"><h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Details</h3><div className="space-y-2"><div className="flex justify-between"><span className="text-slate-400">Contact</span><span className="text-white">{client.contact_name || '—'}</span></div><div className="flex justify-between"><span className="text-slate-400">Email</span><span className="text-white">{client.contact_email || '—'}</span></div><div className="flex justify-between"><span className="text-slate-400">Employees</span><span className="text-white">{client.employee_count?.toLocaleString() || '—'}</span></div></div></div>
+                            <div><h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Analyses ({clientAnalyses.length})</h3>{clientAnalyses.length === 0 ? <div className="bg-slate-900/50 rounded-xl p-6 text-center text-slate-500">No analyses yet</div> : <div className="space-y-2">{clientAnalyses.map(a => <div key={a.id} className="bg-slate-900/50 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-800/50" onClick={() => setSelectedAnalysis(a)}><div><p className="text-white font-medium">{a.findings?.executive_summary?.substring(0,50) || 'Analysis'}...</p><p className="text-slate-500 text-sm">{new Date(a.created_at).toLocaleDateString()}</p></div><div className="flex items-center gap-2"><StatusBadge status={a.status} />{Icons.eye}</div></div>)}</div>}</div>
                         </div>
                     </div>
                     {selectedAnalysis && <AnalysisDetail analysis={selectedAnalysis} client={client} onClose={() => setSelectedAnalysis(null)} />}
@@ -469,17 +586,16 @@ ${f.cost_drivers?.slice(0,2).map(d => `<div class="risk-item"><h4>${d.driver}</h
             const [uploads, setUploads] = useState([]);
             const [analyses, setAnalyses] = useState([]);
             const [loading, setLoading] = useState(true);
-            const [error, setError] = useState(null);
             const [showAddClient, setShowAddClient] = useState(false);
             const [selectedClient, setSelectedClient] = useState(null);
             const [analyzeClient, setAnalyzeClient] = useState(null);
             const [selectedAnalysis, setSelectedAnalysis] = useState(null);
             const [searchTerm, setSearchTerm] = useState('');
             
-            const fetchData = useCallback(async () => { setLoading(true); try { const [c, u, a] = await Promise.all([supabase.from('clients').select('*').order('created_at', { ascending: false }), supabase.from('uploads').select('*').order('uploaded_at', { ascending: false }), supabase.from('analyses').select('*').order('created_at', { ascending: false })]); setClients(c.data || []); setUploads(u.data || []); setAnalyses(a.data || []); } catch (err) { setError(err.message); } finally { setLoading(false); } }, []);
+            const fetchData = useCallback(async () => { setLoading(true); try { const [c, u, a] = await Promise.all([supabase.from('clients').select('*').order('created_at', { ascending: false }), supabase.from('uploads').select('*').order('uploaded_at', { ascending: false }), supabase.from('analyses').select('*').order('created_at', { ascending: false })]); setClients(c.data || []); setUploads(u.data || []); setAnalyses(a.data || []); } catch (err) { console.error(err); } finally { setLoading(false); } }, []);
             useEffect(() => { fetchData(); }, [fetchData]);
             const handleAddClient = async (data) => { try { const { data: d, error: e } = await supabase.from('clients').insert([data]).select(); if (e) throw e; setClients([d[0], ...clients]); setShowAddClient(false); } catch (err) { alert('Error: ' + err.message); } };
-            const handleDeleteClient = async (id) => { if (!confirm('Delete?')) return; try { await supabase.from('clients').delete().eq('id', id); setClients(clients.filter(c => c.id !== id)); } catch (err) { alert('Error: ' + err.message); } };
+            const handleDeleteClient = async (id) => { if (!confirm('Delete this client?')) return; try { await supabase.from('clients').delete().eq('id', id); setClients(clients.filter(c => c.id !== id)); } catch (err) { alert('Error: ' + err.message); } };
             const getClientById = (id) => clients.find(c => c.id === id);
             const filteredClients = clients.filter(c => c.company_name?.toLowerCase().includes(searchTerm.toLowerCase()));
             const stats = { totalClients: clients.length, activeClients: clients.filter(c => c.status === 'active').length, pendingUploads: uploads.filter(u => u.status === 'pending').length, completedAnalyses: analyses.filter(a => a.status === 'complete').length };
@@ -488,18 +604,18 @@ ${f.cost_drivers?.slice(0,2).map(d => `<div class="risk-item"><h4>${d.driver}</h
                 <div className="min-h-screen flex">
                     <div className="w-64 bg-slate-850 border-r border-slate-700/50 flex flex-col">
                         <div className="p-5 border-b border-slate-700/50"><h1 className="text-xl font-bold text-white flex items-center gap-2"><span className="text-2xl">◉</span>Canon Echo</h1><p className="text-slate-500 text-sm mt-1">Admin Dashboard</p></div>
-                        <nav className="flex-1 p-3"><div className="space-y-1">{[{ id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard }, { id: 'clients', label: 'Clients', icon: Icons.clients }, { id: 'uploads', label: 'Uploads', icon: Icons.uploads }, { id: 'analyses', label: 'Analyses', icon: Icons.analyses }].map(item => <button key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left ${activeTab === item.id ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' : 'text-slate-400 hover:bg-slate-700/50'}`}>{item.icon}<span className="font-medium">{item.label}</span></button>)}</div></nav>
-                        <div className="p-4 border-t border-slate-700/50"><div className="bg-slate-900/50 rounded-xl p-4"><p className="text-xs text-slate-500 uppercase mb-2">Status</p><div className="flex items-center gap-2"><div className="w-2 h-2 bg-green-500 rounded-full animate-pulse-subtle"></div><span className="text-sm text-slate-300">Online</span></div></div></div>
+                        <nav className="flex-1 p-3">{[{ id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard }, { id: 'clients', label: 'Clients', icon: Icons.clients }, { id: 'uploads', label: 'Uploads', icon: Icons.uploads }, { id: 'analyses', label: 'Analyses', icon: Icons.analyses }].map(item => <button key={item.id} onClick={() => setActiveTab(item.id)} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left mb-1 ${activeTab === item.id ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' : 'text-slate-400 hover:bg-slate-700/50'}`}>{item.icon}<span className="font-medium">{item.label}</span></button>)}</nav>
+                        <div className="p-4 border-t border-slate-700/50"><div className="bg-slate-900/50 rounded-xl p-4 flex items-center gap-2"><div className="w-2 h-2 bg-green-500 rounded-full animate-pulse-subtle"></div><span className="text-sm text-slate-300">Online</span></div></div>
                     </div>
                     <div className="flex-1 overflow-auto">
-                        <div className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-xl border-b border-slate-700/50 px-8 py-4"><div className="flex items-center justify-between"><h2 className="text-2xl font-bold text-white capitalize">{activeTab}</h2><div className="flex items-center gap-3"><button onClick={fetchData} className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg">{Icons.refresh}</button>{activeTab === 'clients' && <button onClick={() => setShowAddClient(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium">{Icons.plus}Add Client</button>}</div></div></div>
+                        <div className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-xl border-b border-slate-700/50 px-8 py-4 flex items-center justify-between"><h2 className="text-2xl font-bold text-white capitalize">{activeTab}</h2><div className="flex items-center gap-3"><button onClick={fetchData} className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg">{Icons.refresh}</button>{activeTab === 'clients' && <button onClick={() => setShowAddClient(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium">{Icons.plus}Add Client</button>}</div></div>
                         <div className="p-8">
-                            {loading ? <div className="text-slate-500 text-center py-20">Loading...</div> : (
+                            {loading ? <div className="text-center py-20 text-slate-500">Loading...</div> : (
                                 <>
-                                    {activeTab === 'dashboard' && <div className="space-y-8"><div className="grid grid-cols-4 gap-6"><StatCard title="Total Clients" value={stats.totalClients} icon={Icons.clients} color="bg-blue-500/20 text-blue-400" /><StatCard title="Active" value={stats.activeClients} icon={Icons.check} color="bg-green-500/20 text-green-400" /><StatCard title="Pending" value={stats.pendingUploads} icon={Icons.uploads} color="bg-amber-500/20 text-amber-400" /><StatCard title="Analyses" value={stats.completedAnalyses} icon={Icons.analyses} color="bg-purple-500/20 text-purple-400" /></div><div className="grid grid-cols-2 gap-6"><div className="bg-slate-850 border border-slate-700/50 rounded-xl"><div className="p-5 border-b border-slate-700/50"><h3 className="font-semibold text-white">Recent Clients</h3></div><div className="p-2">{clients.slice(0,5).map(c => <div key={c.id} className="p-3 hover:bg-slate-700/30 rounded-lg cursor-pointer flex items-center justify-between" onClick={() => setSelectedClient(c)}><p className="text-white font-medium">{c.company_name}</p><StatusBadge status={c.status} /></div>)}</div></div><div className="bg-slate-850 border border-slate-700/50 rounded-xl"><div className="p-5 border-b border-slate-700/50"><h3 className="font-semibold text-white">Recent Analyses</h3></div><div className="p-2">{analyses.slice(0,5).map(a => <div key={a.id} className="p-3 hover:bg-slate-700/30 rounded-lg cursor-pointer flex items-center justify-between" onClick={() => setSelectedAnalysis(a)}><p className="text-white font-medium">{a.findings?.executive_summary?.substring(0,40) || 'Analysis'}...</p><StatusBadge status={a.status} /></div>)}</div></div></div></div>}
-                                    {activeTab === 'clients' && <div className="space-y-6"><div className="relative"><div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">{Icons.search}</div><input type="text" placeholder="Search..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-slate-850 border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" /></div><div className="bg-slate-850 border border-slate-700/50 rounded-xl overflow-hidden"><table className="w-full"><thead><tr className="border-b border-slate-700/50"><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase">Company</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase">Industry</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase">Status</th><th className="text-right px-6 py-4 text-sm font-semibold text-slate-400 uppercase">Actions</th></tr></thead><tbody>{filteredClients.map((c, i) => <tr key={c.id} className={`border-b border-slate-700/30 hover:bg-slate-700/20 cursor-pointer ${i % 2 ? 'bg-slate-900/20' : ''}`} onClick={() => setSelectedClient(c)}><td className="px-6 py-4 text-white font-medium">{c.company_name}</td><td className="px-6 py-4 text-slate-300">{c.industry || '—'}</td><td className="px-6 py-4"><StatusBadge status={c.status} /></td><td className="px-6 py-4 text-right"><div className="flex items-center justify-end gap-2" onClick={e => e.stopPropagation()}><button className="p-2 text-slate-400 hover:text-blue-400 rounded-lg" onClick={() => setAnalyzeClient(c)}>{Icons.sparkles}</button><button className="p-2 text-slate-400 hover:text-red-400 rounded-lg" onClick={() => handleDeleteClient(c.id)}>{Icons.trash}</button></div></td></tr>)}</tbody></table></div></div>}
-                                    {activeTab === 'uploads' && <div className="bg-slate-850 border border-slate-700/50 rounded-xl overflow-hidden"><table className="w-full"><thead><tr className="border-b border-slate-700/50"><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase">File</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase">Date</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase">Status</th></tr></thead><tbody>{uploads.map((u, i) => <tr key={u.id} className={`border-b border-slate-700/30 ${i % 2 ? 'bg-slate-900/20' : ''}`}><td className="px-6 py-4 text-white">{u.file_name}</td><td className="px-6 py-4 text-slate-300 mono text-sm">{new Date(u.uploaded_at).toLocaleString()}</td><td className="px-6 py-4"><StatusBadge status={u.status} /></td></tr>)}</tbody></table></div>}
-                                    {activeTab === 'analyses' && <div className="bg-slate-850 border border-slate-700/50 rounded-xl overflow-hidden"><table className="w-full"><thead><tr className="border-b border-slate-700/50"><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase">Summary</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase">Date</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase">Status</th></tr></thead><tbody>{analyses.map((a, i) => <tr key={a.id} className={`border-b border-slate-700/30 hover:bg-slate-700/20 cursor-pointer ${i % 2 ? 'bg-slate-900/20' : ''}`} onClick={() => setSelectedAnalysis(a)}><td className="px-6 py-4 text-white">{a.findings?.executive_summary?.substring(0,60) || 'Analysis'}...</td><td className="px-6 py-4 text-slate-300 mono text-sm">{new Date(a.created_at).toLocaleString()}</td><td className="px-6 py-4"><StatusBadge status={a.status} /></td></tr>)}</tbody></table></div>}
+                                    {activeTab === 'dashboard' && <div className="space-y-8"><div className="grid grid-cols-4 gap-6"><StatCard title="Total Clients" value={stats.totalClients} icon={Icons.clients} color="bg-blue-500/20 text-blue-400" /><StatCard title="Active" value={stats.activeClients} icon={Icons.check} color="bg-green-500/20 text-green-400" /><StatCard title="Pending" value={stats.pendingUploads} icon={Icons.uploads} color="bg-amber-500/20 text-amber-400" /><StatCard title="Analyses" value={stats.completedAnalyses} icon={Icons.analyses} color="bg-purple-500/20 text-purple-400" /></div><div className="grid grid-cols-2 gap-6"><div className="bg-slate-850 border border-slate-700/50 rounded-xl"><div className="p-5 border-b border-slate-700/50"><h3 className="font-semibold text-white">Recent Clients</h3></div><div className="p-2">{clients.slice(0,5).map(c => <div key={c.id} className="p-3 hover:bg-slate-700/30 rounded-lg cursor-pointer flex items-center justify-between" onClick={() => setSelectedClient(c)}><p className="text-white font-medium">{c.company_name}</p><StatusBadge status={c.status} /></div>)}</div></div><div className="bg-slate-850 border border-slate-700/50 rounded-xl"><div className="p-5 border-b border-slate-700/50"><h3 className="font-semibold text-white">Recent Analyses</h3></div><div className="p-2">{analyses.slice(0,5).map(a => <div key={a.id} className="p-3 hover:bg-slate-700/30 rounded-lg cursor-pointer" onClick={() => setSelectedAnalysis(a)}><p className="text-white font-medium">{a.findings?.executive_summary?.substring(0,40) || 'Analysis'}...</p></div>)}</div></div></div></div>}
+                                    {activeTab === 'clients' && <div className="space-y-6"><div className="relative"><div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">{Icons.search}</div><input type="text" placeholder="Search clients..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-slate-850 border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" /></div><div className="bg-slate-850 border border-slate-700/50 rounded-xl overflow-hidden"><table className="w-full"><thead><tr className="border-b border-slate-700/50"><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400">Company</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400">Industry</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400">Status</th><th className="text-right px-6 py-4 text-sm font-semibold text-slate-400">Actions</th></tr></thead><tbody>{filteredClients.map((c, i) => <tr key={c.id} className={`border-b border-slate-700/30 hover:bg-slate-700/20 cursor-pointer ${i % 2 ? 'bg-slate-900/20' : ''}`} onClick={() => setSelectedClient(c)}><td className="px-6 py-4 text-white font-medium">{c.company_name}</td><td className="px-6 py-4 text-slate-300">{c.industry || '—'}</td><td className="px-6 py-4"><StatusBadge status={c.status} /></td><td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}><button className="p-2 text-slate-400 hover:text-blue-400" onClick={() => setAnalyzeClient(c)}>{Icons.sparkles}</button><button className="p-2 text-slate-400 hover:text-red-400" onClick={() => handleDeleteClient(c.id)}>{Icons.trash}</button></td></tr>)}</tbody></table></div></div>}
+                                    {activeTab === 'uploads' && <div className="bg-slate-850 border border-slate-700/50 rounded-xl overflow-hidden"><table className="w-full"><thead><tr className="border-b border-slate-700/50"><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400">File</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400">Date</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400">Status</th></tr></thead><tbody>{uploads.map((u, i) => <tr key={u.id} className={`border-b border-slate-700/30 ${i % 2 ? 'bg-slate-900/20' : ''}`}><td className="px-6 py-4 text-white">{u.file_name}</td><td className="px-6 py-4 text-slate-300 mono text-sm">{new Date(u.uploaded_at).toLocaleString()}</td><td className="px-6 py-4"><StatusBadge status={u.status} /></td></tr>)}</tbody></table></div>}
+                                    {activeTab === 'analyses' && <div className="bg-slate-850 border border-slate-700/50 rounded-xl overflow-hidden"><table className="w-full"><thead><tr className="border-b border-slate-700/50"><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400">Summary</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400">Date</th><th className="text-left px-6 py-4 text-sm font-semibold text-slate-400">Status</th></tr></thead><tbody>{analyses.map((a, i) => <tr key={a.id} className={`border-b border-slate-700/30 hover:bg-slate-700/20 cursor-pointer ${i % 2 ? 'bg-slate-900/20' : ''}`} onClick={() => setSelectedAnalysis(a)}><td className="px-6 py-4 text-white">{a.findings?.executive_summary?.substring(0,60) || 'Analysis'}...</td><td className="px-6 py-4 text-slate-300 mono text-sm">{new Date(a.created_at).toLocaleString()}</td><td className="px-6 py-4"><StatusBadge status={a.status} /></td></tr>)}</tbody></table></div>}
                                 </>
                             )}
                         </div>
