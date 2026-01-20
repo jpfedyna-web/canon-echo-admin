@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -284,15 +285,41 @@
                 setFile(f);
                 setError(null);
                 
-                Papa.parse(f, {
-                    header: true,
-                    complete: (results) => {
-                        setCsvData(results.data);
-                    },
-                    error: (err) => {
-                        setError('Failed to parse file: ' + err.message);
-                    }
-                });
+                const fileExtension = f.name.split('.').pop().toLowerCase();
+                
+                if (fileExtension === 'csv') {
+                    // Parse CSV
+                    Papa.parse(f, {
+                        header: true,
+                        complete: (results) => {
+                            setCsvData(results.data.filter(row => Object.values(row).some(v => v)));
+                        },
+                        error: (err) => {
+                            setError('Failed to parse CSV file: ' + err.message);
+                        }
+                    });
+                } else if (['xlsx', 'xls'].includes(fileExtension)) {
+                    // Parse Excel
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const firstSheetName = workbook.SheetNames[0];
+                            const worksheet = workbook.Sheets[firstSheetName];
+                            const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+                            setCsvData(jsonData.filter(row => Object.values(row).some(v => v)));
+                        } catch (err) {
+                            setError('Failed to parse Excel file: ' + err.message);
+                        }
+                    };
+                    reader.onerror = () => {
+                        setError('Failed to read file');
+                    };
+                    reader.readAsArrayBuffer(f);
+                } else {
+                    setError('Unsupported file type. Please upload a CSV or Excel file.');
+                }
             };
             
             const runAnalysis = async () => {
@@ -388,7 +415,7 @@
                                 <input
                                     ref={fileInputRef}
                                     type="file"
-                                    accept=".csv,.xlsx,.xls"
+                                    accept=".csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                                     onChange={handleFileSelect}
                                     className="hidden"
                                 />
@@ -397,7 +424,7 @@
                                     {file ? file.name : 'Drop census file here'}
                                 </p>
                                 <p className="text-slate-500 text-sm">
-                                    {file ? `${csvData?.length || 0} rows loaded` : 'CSV or Excel • Click to browse'}
+                                    {file ? `${csvData?.length || 0} rows loaded` : 'CSV or Excel (.xlsx, .xls) • Click to browse'}
                                 </p>
                             </div>
                             
