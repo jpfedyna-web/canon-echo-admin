@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canon Echo | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'DM Sans', sans-serif; 
+            background: #0a0f1a;
+            color: #e2e8f0;
+        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-subtle { animation: pulse-subtle 2s ease-in-out infinite; }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin { animation: spin 1s linear infinite; }
+        
+        .status-pending { color: #f59e0b; background: rgba(245, 158, 11, 0.15); }
+        .status-active, .status-complete, .status-received { color: #22c55e; background: rgba(34, 197, 94, 0.15); }
+        .status-processing, .status-analyzing { color: #3b82f6; background: rgba(59, 130, 246, 0.15); }
+        .status-delivered { color: #a855f7; background: rgba(168, 85, 247, 0.15); }
+        .status-inactive, .status-error { color: #ef4444; background: rgba(239, 68, 68, 0.15); }
+        
+        .drop-zone {
+            border: 2px dashed #475569;
+            transition: all 0.2s ease;
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#162032',
+                            950: '#0a0f1a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useRef } = React;
+        
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://ukpniztesqiwkhazcddp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVrcG5penRlc3Fpd2toYXpjZGRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4NTA2MDAsImV4cCI6MjA4NDQyNjYwMH0.OpV9KSoVBKwO1bQYqnGiBWHilyTiTPAxxngPW30CVu0';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Icons
+        const Icons = {
+            clients: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
+            uploads: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>,
+            analyses: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+            plus: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
+            refresh: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+            search: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+            close: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>,
+            check: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>,
+            trash: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
+            eye: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>,
+            dashboard: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>,
+            file: <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+            sparkles: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>,
+            loader: <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>,
+        };
+        
+        // Status Badge Component
+        const StatusBadge = ({ status }) => {
+            const statusClass = `status-${status?.toLowerCase() || 'pending'}`;
+            return (
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClass}`}>
+                    {status || 'pending'}
+                </span>
+            );
+        };
+        
+        // Stat Card Component
+        const StatCard = ({ title, value, icon, color }) => (
+            <div className="bg-slate-850 border border-slate-700/50 rounded-xl p-5 hover:border-slate-600/50 transition-all">
+                <div className="flex items-center justify-between mb-3">
+                    <span className="text-slate-400 text-sm font-medium">{title}</span>
+                    <div className={`p-2 rounded-lg ${color}`}>
+                        {icon}
+                    </div>
+                </div>
+                <div className="text-3xl font-bold text-white">{value}</div>
+            </div>
+        );
+        
+        // Modal Component
+        const Modal = ({ isOpen, onClose, title, children, wide }) => {
+            if (!isOpen) return null;
+            
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+                    <div className={`relative bg-slate-850 border border-slate-700 rounded-2xl w-full ${wide ? 'max-w-4xl' : 'max-w-lg'} mx-4 max-h-[90vh] overflow-hidden flex flex-col animate-fade-in`}>
+                        <div className="flex items-center justify-between p-5 border-b border-slate-700">
+                            <h3 className="text-lg font-semibold text-white">{title}</h3>
+                            <button onClick={onClose} className="p-1 hover:bg-slate-700 rounded-lg transition-colors">
+                                {Icons.close}
+                            </button>
+                        </div>
+                        <div className="p-5 overflow-y-auto">
+                            {children}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Add Client Form
+        const AddClientForm = ({ onSubmit, onCancel }) => {
+            const [formData, setFormData] = useState({
+                company_name: '',
+                contact_name: '',
+                contact_email: '',
+                industry: '',
+                funding_type: '',
+                employee_count: ''
+            });
+            
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSubmit({
+                    ...formData,
+                    employee_count: formData.employee_count ? parseInt(formData.employee_count) : null
+                });
+            };
+            
+            return (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1">Company Name *</label>
+                        <input
+                            type="text"
+                            required
+                            value={formData.company_name}
+                            onChange={(e) => setFormData({...formData, company_name: e.target.value})}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                            placeholder="Acme Corporation"
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-1">Contact Name</label>
+                            <input
+                                type="text"
+                                value={formData.contact_name}
+                                onChange={(e) => setFormData({...formData, contact_name: e.target.value})}
+                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                                placeholder="John Smith"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-1">Contact Email</label>
+                            <input
+                                type="email"
+                                value={formData.contact_email}
+                                onChange={(e) => setFormData({...formData, contact_email: e.target.value})}
+                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                                placeholder="john@acme.com"
+                            />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-1">Industry</label>
+                            <input
+                                type="text"
+                                value={formData.industry}
+                                onChange={(e) => setFormData({...formData, industry: e.target.value})}
+                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                                placeholder="Technology"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-1">Funding Type</label>
+                            <select
+                                value={formData.funding_type}
+                                onChange={(e) => setFormData({...formData, funding_type: e.target.value})}
+                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                            >
+                                <option value="">Select...</option>
+                                <option value="Fully Insured">Fully Insured</option>
+                                <option value="Self-Funded">Self-Funded</option>
+                                <option value="Level-Funded">Level-Funded</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-1">Employee Count</label>
+                        <input
+                            type="number"
+                            value={formData.employee_count}
+                            onChange={(e) => setFormData({...formData, employee_count: e.target.value})}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                            placeholder="250"
+                        />
+                    </div>
+                    <div className="flex gap-3 pt-4">
+                        <button
+                            type="button"
+                            onClick={onCancel}
+                            className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
+                        >
+                            Add Client
+                        </button>
+                    </div>
+                </form>
+            );
+        };
+        
+        // File Upload & Analysis Component
+        const UploadAnalyze = ({ client, onComplete, onCancel }) => {
+            const [dragOver, setDragOver] = useState(false);
+            const [file, setFile] = useState(null);
+            const [csvData, setCsvData] = useState(null);
+            const [analyzing, setAnalyzing] = useState(false);
+            const [results, setResults] = useState(null);
+            const [error, setError] = useState(null);
+            const fileInputRef = useRef(null);
+            
+            const handleDrop = (e) => {
+                e.preventDefault();
+                setDragOver(false);
+                const droppedFile = e.dataTransfer.files[0];
+                if (droppedFile) processFile(droppedFile);
+            };
+            
+            const handleFileSelect = (e) => {
+                const selectedFile = e.target.files[0];
+                if (selectedFile) processFile(selectedFile);
+            };
+            
+            const processFile = (f) => {
+                setFile(f);
+                setError(null);
+                
+                Papa.parse(f, {
+                    header: true,
+                    complete: (results) => {
+                        setCsvData(results.data);
+                    },
+                    error: (err) => {
+                        setError('Failed to parse file: ' + err.message);
+                    }
+                });
+            };
+            
+            const runAnalysis = async () => {
+                if (!csvData) return;
+                
+                setAnalyzing(true);
+                setError(null);
+                
+                try {
+                    // Convert CSV data to string for analysis
+                    const csvString = Papa.unparse(csvData);
+                    
+                    // First, create the upload record
+                    const { data: uploadData, error: uploadError } = await supabase
+                        .from('uploads')
+                        .insert([{
+                            client_id: client.id,
+                            file_name: file.name,
+                            file_type: file.type || 'text/csv',
+                            file_url: 'local-upload', // In production, upload to storage first
+                            status: 'analyzing'
+                        }])
+                        .select()
+                        .single();
+                    
+                    if (uploadError) throw uploadError;
+                    
+                    // Call the analysis function
+                    const response = await fetch('/.netlify/functions/analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            censusData: csvString,
+                            companyName: client.company_name,
+                            employeeCount: client.employee_count,
+                            fundingType: client.funding_type,
+                            industry: client.industry
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Analysis request failed');
+                    }
+                    
+                    const analysisResult = await response.json();
+                    
+                    if (!analysisResult.success) {
+                        throw new Error(analysisResult.message || 'Analysis failed');
+                    }
+                    
+                    // Update upload status
+                    await supabase
+                        .from('uploads')
+                        .update({ status: 'complete' })
+                        .eq('id', uploadData.id);
+                    
+                    // Save analysis results
+                    const { data: analysisData, error: analysisError } = await supabase
+                        .from('analyses')
+                        .insert([{
+                            client_id: client.id,
+                            upload_id: uploadData.id,
+                            findings: analysisResult.findings,
+                            status: 'complete'
+                        }])
+                        .select()
+                        .single();
+                    
+                    if (analysisError) throw analysisError;
+                    
+                    setResults(analysisResult.findings);
+                    
+                } catch (err) {
+                    console.error('Analysis error:', err);
+                    setError(err.message || 'Analysis failed. Please try again.');
+                } finally {
+                    setAnalyzing(false);
+                }
+            };
+            
+            return (
+                <div className="space-y-6">
+                    {!results ? (
+                        <>
+                            {/* Drop Zone */}
+                            <div
+                                className={`drop-zone rounded-xl p-8 text-center cursor-pointer ${dragOver ? 'drag-over' : ''}`}
+                                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                                onDragLeave={() => setDragOver(false)}
+                                onDrop={handleDrop}
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept=".csv,.xlsx,.xls"
+                                    onChange={handleFileSelect}
+                                    className="hidden"
+                                />
+                                <div className="text-slate-400 mb-3">{Icons.file}</div>
+                                <p className="text-white font-medium mb-1">
+                                    {file ? file.name : 'Drop census file here'}
+                                </p>
+                                <p className="text-slate-500 text-sm">
+                                    {file ? `${csvData?.length || 0} rows loaded` : 'CSV or Excel • Click to browse'}
+                                </p>
+                            </div>
+                            
+                            {/* Preview */}
+                            {csvData && csvData.length > 0 && (
+                                <div className="bg-slate-900/50 rounded-xl p-4">
+                                    <h4 className="text-sm font-semibold text-slate-400 mb-3">Data Preview</h4>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr>
+                                                    {Object.keys(csvData[0] || {}).slice(0, 5).map(key => (
+                                                        <th key={key} className="text-left px-3 py-2 text-slate-400 font-medium">{key}</th>
+                                                    ))}
+                                                    {Object.keys(csvData[0] || {}).length > 5 && (
+                                                        <th className="text-left px-3 py-2 text-slate-500">+{Object.keys(csvData[0]).length - 5} more</th>
+                                                    )}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {csvData.slice(0, 3).map((row, i) => (
+                                                    <tr key={i} className="border-t border-slate-700/50">
+                                                        {Object.values(row).slice(0, 5).map((val, j) => (
+                                                            <td key={j} className="px-3 py-2 text-slate-300 mono text-xs">{String(val).substring(0, 20)}</td>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p className="text-slate-500 text-xs mt-2">Showing first 3 of {csvData.length} rows</p>
+                                </div>
+                            )}
+                            
+                            {error && (
+                                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-400 text-sm">
+                                    {error}
+                                </div>
+                            )}
+                            
+                            {/* Actions */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={onCancel}
+                                    className="flex-1 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={runAnalysis}
+                                    disabled={!csvData || analyzing}
+                                    className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-600 disabled:cursor-not-allowed rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                                >
+                                    {analyzing ? (
+                                        <>
+                                            {Icons.loader}
+                                            Analyzing...
+                                        </>
+                                    ) : (
+                                        <>
+                                            {Icons.sparkles}
+                                            Run Analysis
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        /* Results View */
+                        <div className="space-y-6">
+                            {/* Executive Summary */}
+                            <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-5">
+                                <h4 className="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-2">Executive Summary</h4>
+                                <p className="text-white">{results.executive_summary}</p>
+                            </div>
+                            
+                            {/* Risk Score */}
+                            {results.risk_score && (
+                                <div className="bg-slate-900/50 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Risk Assessment</h4>
+                                    <div className="flex items-center gap-6">
+                                        <div className="text-center">
+                                            <div className={`text-4xl font-bold ${
+                                                results.risk_score.overall < 40 ? 'text-green-400' :
+                                                results.risk_score.overall < 70 ? 'text-amber-400' : 'text-red-400'
+                                            }`}>
+                                                {results.risk_score.overall}
+                                            </div>
+                                            <div className="text-slate-500 text-sm">Risk Score</div>
+                                        </div>
+                                        <div className="flex-1 space-y-2">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-400">Category</span>
+                                                <span className="text-white">{results.risk_score.category}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-400">Trend</span>
+                                                <span className="text-white">{results.risk_score.trend}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Recommendations */}
+                            {results.recommendations && (
+                                <div className="bg-slate-900/50 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Recommendations</h4>
+                                    <div className="space-y-3">
+                                        {results.recommendations.map((rec, i) => (
+                                            <div key={i} className="bg-slate-800/50 rounded-lg p-4">
+                                                <p className="text-white font-medium mb-1">{rec.action}</p>
+                                                <p className="text-slate-400 text-sm">{rec.rationale}</p>
+                                                <div className="flex gap-4 mt-2 text-xs">
+                                                    <span className="text-slate-500">Timeline: <span className="text-slate-300">{rec.timeline}</span></span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Next Steps */}
+                            {results.next_steps && (
+                                <div className="bg-slate-900/50 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Next Steps</h4>
+                                    <ul className="space-y-2">
+                                        {results.next_steps.map((step, i) => (
+                                            <li key={i} className="flex items-start gap-3">
+                                                <span className="w-6 h-6 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">{i + 1}</span>
+                                                <span className="text-slate-300">{step}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                            
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={onComplete}
+                                    className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-500 rounded-lg font-medium transition-colors"
+                                >
+                                    Done
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        // Analysis Detail View
+        const AnalysisDetail = ({ analysis, onClose }) => {
+            const findings = analysis.findings || {};
+            
+            return (
+                <div className="fixed inset-0 z-50 flex">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+                    <div className="relative ml-auto w-full max-w-3xl bg-slate-850 border-l border-slate-700 h-full overflow-y-auto animate-fade-in">
+                        <div className="sticky top-0 bg-slate-850 border-b border-slate-700 p-5 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-xl font-bold text-white">Analysis Results</h2>
+                                <p className="text-slate-400 text-sm mono">{new Date(analysis.created_at).toLocaleString()}</p>
+                            </div>
+                            <button onClick={onClose} className="p-2 hover:bg-slate-700 rounded-lg transition-colors">
+                                {Icons.close}
+                            </button>
+                        </div>
+                        
+                        <div className="p-5 space-y-6">
+                            {/* Executive Summary */}
+                            {findings.executive_summary && (
+                                <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-2">Executive Summary</h4>
+                                    <p className="text-white">{findings.executive_summary}</p>
+                                </div>
+                            )}
+                            
+                            {/* Risk Score */}
+                            {findings.risk_score && (
+                                <div className="bg-slate-900/50 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Risk Assessment</h4>
+                                    <div className="flex items-center gap-6">
+                                        <div className="text-center">
+                                            <div className={`text-4xl font-bold ${
+                                                findings.risk_score.overall < 40 ? 'text-green-400' :
+                                                findings.risk_score.overall < 70 ? 'text-amber-400' : 'text-red-400'
+                                            }`}>
+                                                {findings.risk_score.overall}
+                                            </div>
+                                            <div className="text-slate-500 text-sm">Risk Score</div>
+                                        </div>
+                                        <div className="flex-1 space-y-2">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-400">Category</span>
+                                                <span className="text-white">{findings.risk_score.category}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-slate-400">Trend</span>
+                                                <span className="text-white">{findings.risk_score.trend}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Cost Drivers */}
+                            {findings.cost_drivers && findings.cost_drivers.length > 0 && (
+                                <div className="bg-slate-900/50 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Cost Drivers</h4>
+                                    <div className="space-y-3">
+                                        {findings.cost_drivers.map((driver, i) => (
+                                            <div key={i} className="bg-slate-800/50 rounded-lg p-4">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <p className="text-white font-medium">{driver.factor}</p>
+                                                    <span className={`px-2 py-0.5 rounded text-xs ${
+                                                        driver.impact === 'High' ? 'bg-red-500/20 text-red-400' :
+                                                        driver.impact === 'Medium' ? 'bg-amber-500/20 text-amber-400' :
+                                                        'bg-green-500/20 text-green-400'
+                                                    }`}>{driver.impact} Impact</span>
+                                                </div>
+                                                <p className="text-slate-400 text-sm mb-2">{driver.description}</p>
+                                                <p className="text-blue-400 text-sm">→ {driver.recommendation}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Opportunities */}
+                            {findings.opportunities && findings.opportunities.length > 0 && (
+                                <div className="bg-slate-900/50 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Opportunities</h4>
+                                    <div className="space-y-3">
+                                        {findings.opportunities.map((opp, i) => (
+                                            <div key={i} className="bg-slate-800/50 rounded-lg p-4">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <p className="text-white font-medium">{opp.title}</p>
+                                                    <span className="text-green-400 text-sm font-medium">{opp.potential_savings}</span>
+                                                </div>
+                                                <p className="text-slate-400 text-sm">{opp.implementation}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Recommendations */}
+                            {findings.recommendations && findings.recommendations.length > 0 && (
+                                <div className="bg-slate-900/50 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Recommendations</h4>
+                                    <div className="space-y-3">
+                                        {findings.recommendations.map((rec, i) => (
+                                            <div key={i} className="bg-slate-800/50 rounded-lg p-4">
+                                                <p className="text-white font-medium mb-1">{rec.action}</p>
+                                                <p className="text-slate-400 text-sm mb-2">{rec.rationale}</p>
+                                                <div className="flex gap-4 text-xs">
+                                                    <span className="text-slate-500">Timeline: <span className="text-slate-300">{rec.timeline}</span></span>
+                                                    <span className="text-slate-500">Expected: <span className="text-slate-300">{rec.expected_outcome}</span></span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Next Steps */}
+                            {findings.next_steps && findings.next_steps.length > 0 && (
+                                <div className="bg-slate-900/50 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Next Steps</h4>
+                                    <ul className="space-y-2">
+                                        {findings.next_steps.map((step, i) => (
+                                            <li key={i} className="flex items-start gap-3">
+                                                <span className="w-6 h-6 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">{i + 1}</span>
+                                                <span className="text-slate-300">{step}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                            
+                            {/* Raw JSON fallback */}
+                            {findings.raw_analysis && (
+                                <div className="bg-slate-900/50 rounded-xl p-5">
+                                    <h4 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Analysis Output</h4>
+                                    <pre className="text-slate-300 text-sm whitespace-pre-wrap mono">{findings.raw_analysis}</pre>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // Client Detail View
+        const ClientDetail = ({ client, uploads, analyses, onClose, onRefresh, onUploadAnalyze }) => {
+            const clientUploads = uploads.filter(u => u.client_id === client.id);
+            const clientAnalyses = analyses.filter(a => a.client_id === client.id);
+            const [selectedAnalysis, setSelectedAnalysis] = useState(null);
+            
+            return (
+                <div className="fixed inset-0 z-50 flex">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+                    <div className="relative ml-auto w-full max-w-2xl bg-slate-850 border-l border-slate-700 h-full overflow-y-auto animate-fade-in">
+                        <div className="sticky top-0 bg-slate-850 border-b border-slate-700 p-5 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-xl font-bold text-white">{client.company_name}</h2>
+                                <p className="text-slate-400 text-sm">{client.industry || 'No industry'} • {client.funding_type || 'No funding type'}</p>
+                            </div>
+                            <button onClick={onClose} className="p-2 hover:bg-slate-700 rounded-lg transition-colors">
+                                {Icons.close}
+                            </button>
+                        </div>
+                        
+                        <div className="p-5 space-y-6">
+                            {/* Action Button */}
+                            <button
+                                onClick={() => onUploadAnalyze(client)}
+                                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
+                            >
+                                {Icons.sparkles}
+                                Upload Census & Run Analysis
+                            </button>
+                            
+                            {/* Contact Info */}
+                            <div className="bg-slate-900/50 rounded-xl p-4">
+                                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Contact Information</h3>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Name</span>
+                                        <span className="text-white">{client.contact_name || '—'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Email</span>
+                                        <span className="text-white">{client.contact_email || '—'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Employees</span>
+                                        <span className="text-white">{client.employee_count?.toLocaleString() || '—'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-400">Status</span>
+                                        <StatusBadge status={client.status} />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Analyses */}
+                            <div>
+                                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Analyses ({clientAnalyses.length})</h3>
+                                {clientAnalyses.length === 0 ? (
+                                    <div className="bg-slate-900/50 rounded-xl p-6 text-center">
+                                        <p className="text-slate-500">No analyses yet</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {clientAnalyses.map(analysis => (
+                                            <div 
+                                                key={analysis.id} 
+                                                className="bg-slate-900/50 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-800/50 transition-colors"
+                                                onClick={() => setSelectedAnalysis(analysis)}
+                                            >
+                                                <div>
+                                                    <p className="text-white font-medium">
+                                                        {analysis.findings?.executive_summary?.substring(0, 50) || 'Analysis'}{analysis.findings?.executive_summary?.length > 50 ? '...' : ''}
+                                                    </p>
+                                                    <p className="text-slate-500 text-sm mono">{new Date(analysis.created_at).toLocaleDateString()}</p>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <StatusBadge status={analysis.status} />
+                                                    {Icons.eye}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            
+                            {/* Uploads */}
+                            <div>
+                                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Uploads ({clientUploads.length})</h3>
+                                {clientUploads.length === 0 ? (
+                                    <div className="bg-slate-900/50 rounded-xl p-6 text-center">
+                                        <p className="text-slate-500">No uploads yet</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {clientUploads.map(upload => (
+                                            <div key={upload.id} className="bg-slate-900/50 rounded-xl p-4 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-white font-medium">{upload.file_name}</p>
+                                                    <p className="text-slate-500 text-sm mono">{new Date(upload.uploaded_at).toLocaleDateString()}</p>
+                                                </div>
+                                                <StatusBadge status={upload.status} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Analysis Detail Modal */}
+                    {selectedAnalysis && (
+                        <AnalysisDetail 
+                            analysis={selectedAnalysis} 
+                            onClose={() => setSelectedAnalysis(null)} 
+                        />
+                    )}
+                </div>
+            );
+        };
+        
+        // Main App
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [clients, setClients] = useState([]);
+            const [uploads, setUploads] = useState([]);
+            const [analyses, setAnalyses] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+            const [showAddClient, setShowAddClient] = useState(false);
+            const [selectedClient, setSelectedClient] = useState(null);
+            const [analyzeClient, setAnalyzeClient] = useState(null);
+            const [selectedAnalysis, setSelectedAnalysis] = useState(null);
+            const [searchTerm, setSearchTerm] = useState('');
+            
+            // Fetch all data
+            const fetchData = useCallback(async () => {
+                setLoading(true);
+                setError(null);
+                
+                try {
+                    const [clientsRes, uploadsRes, analysesRes] = await Promise.all([
+                        supabase.from('clients').select('*').order('created_at', { ascending: false }),
+                        supabase.from('uploads').select('*').order('uploaded_at', { ascending: false }),
+                        supabase.from('analyses').select('*').order('created_at', { ascending: false })
+                    ]);
+                    
+                    if (clientsRes.error) throw clientsRes.error;
+                    if (uploadsRes.error) throw uploadsRes.error;
+                    if (analysesRes.error) throw analysesRes.error;
+                    
+                    setClients(clientsRes.data || []);
+                    setUploads(uploadsRes.data || []);
+                    setAnalyses(analysesRes.data || []);
+                } catch (err) {
+                    setError(err.message);
+                    console.error('Error fetching data:', err);
+                } finally {
+                    setLoading(false);
+                }
+            }, []);
+            
+            useEffect(() => {
+                fetchData();
+            }, [fetchData]);
+            
+            // Add new client
+            const handleAddClient = async (clientData) => {
+                try {
+                    const { data, error } = await supabase
+                        .from('clients')
+                        .insert([clientData])
+                        .select();
+                    
+                    if (error) throw error;
+                    
+                    setClients([data[0], ...clients]);
+                    setShowAddClient(false);
+                } catch (err) {
+                    alert('Error adding client: ' + err.message);
+                }
+            };
+            
+            // Delete client
+            const handleDeleteClient = async (clientId) => {
+                if (!confirm('Are you sure you want to delete this client?')) return;
+                
+                try {
+                    const { error } = await supabase
+                        .from('clients')
+                        .delete()
+                        .eq('id', clientId);
+                    
+                    if (error) throw error;
+                    
+                    setClients(clients.filter(c => c.id !== clientId));
+                } catch (err) {
+                    alert('Error deleting client: ' + err.message);
+                }
+            };
+            
+            // Filter clients by search
+            const filteredClients = clients.filter(client => 
+                client.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                client.contact_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                client.industry?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            // Calculate stats
+            const stats = {
+                totalClients: clients.length,
+                activeClients: clients.filter(c => c.status === 'active').length,
+                pendingUploads: uploads.filter(u => u.status === 'pending').length,
+                completedAnalyses: analyses.filter(a => a.status === 'complete').length
+            };
+            
+            return (
+                <div className="min-h-screen flex">
+                    {/* Sidebar */}
+                    <div className="w-64 bg-slate-850 border-r border-slate-700/50 flex flex-col">
+                        <div className="p-5 border-b border-slate-700/50">
+                            <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                                <span className="text-2xl">◉</span>
+                                Canon Echo
+                            </h1>
+                            <p className="text-slate-500 text-sm mt-1">Admin Dashboard</p>
+                        </div>
+                        
+                        <nav className="flex-1 p-3">
+                            <div className="space-y-1">
+                                {[
+                                    { id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard },
+                                    { id: 'clients', label: 'Clients', icon: Icons.clients },
+                                    { id: 'uploads', label: 'Uploads', icon: Icons.uploads },
+                                    { id: 'analyses', label: 'Analyses', icon: Icons.analyses },
+                                ].map(item => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setActiveTab(item.id)}
+                                        className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-all ${
+                                            activeTab === item.id
+                                                ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
+                                                : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
+                                        }`}
+                                    >
+                                        {item.icon}
+                                        <span className="font-medium">{item.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </nav>
+                        
+                        <div className="p-4 border-t border-slate-700/50">
+                            <div className="bg-slate-900/50 rounded-xl p-4">
+                                <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">System Status</p>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse-subtle"></div>
+                                    <span className="text-sm text-slate-300">All Systems Online</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Main Content */}
+                    <div className="flex-1 overflow-auto">
+                        {/* Header */}
+                        <div className="sticky top-0 z-10 bg-slate-950/80 backdrop-blur-xl border-b border-slate-700/50 px-8 py-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-white capitalize">{activeTab}</h2>
+                                    <p className="text-slate-500 text-sm">
+                                        {activeTab === 'dashboard' && 'Overview of your platform'}
+                                        {activeTab === 'clients' && `${clients.length} total clients`}
+                                        {activeTab === 'uploads' && `${uploads.length} total uploads`}
+                                        {activeTab === 'analyses' && `${analyses.length} total analyses`}
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={fetchData}
+                                        className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+                                        title="Refresh data"
+                                    >
+                                        {Icons.refresh}
+                                    </button>
+                                    {activeTab === 'clients' && (
+                                        <button
+                                            onClick={() => setShowAddClient(true)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium transition-colors"
+                                        >
+                                            {Icons.plus}
+                                            Add Client
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="p-8">
+                            {loading ? (
+                                <div className="flex items-center justify-center h-64">
+                                    <div className="text-slate-500">Loading...</div>
+                                </div>
+                            ) : error ? (
+                                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
+                                    <p className="text-red-400">Error: {error}</p>
+                                    <button 
+                                        onClick={fetchData}
+                                        className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-sm font-medium transition-colors"
+                                    >
+                                        Retry
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    {/* Dashboard View */}
+                                    {activeTab === 'dashboard' && (
+                                        <div className="space-y-8 animate-fade-in">
+                                            <div className="grid grid-cols-4 gap-6">
+                                                <StatCard
+                                                    title="Total Clients"
+                                                    value={stats.totalClients}
+                                                    icon={Icons.clients}
+                                                    color="bg-blue-500/20 text-blue-400"
+                                                />
+                                                <StatCard
+                                                    title="Active Clients"
+                                                    value={stats.activeClients}
+                                                    icon={Icons.check}
+                                                    color="bg-green-500/20 text-green-400"
+                                                />
+                                                <StatCard
+                                                    title="Pending Uploads"
+                                                    value={stats.pendingUploads}
+                                                    icon={Icons.uploads}
+                                                    color="bg-amber-500/20 text-amber-400"
+                                                />
+                                                <StatCard
+                                                    title="Completed Analyses"
+                                                    value={stats.completedAnalyses}
+                                                    icon={Icons.analyses}
+                                                    color="bg-purple-500/20 text-purple-400"
+                                                />
+                                            </div>
+                                            
+                                            <div className="grid grid-cols-2 gap-6">
+                                                {/* Recent Clients */}
+                                                <div className="bg-slate-850 border border-slate-700/50 rounded-xl">
+                                                    <div className="p-5 border-b border-slate-700/50 flex items-center justify-between">
+                                                        <h3 className="font-semibold text-white">Recent Clients</h3>
+                                                        <button 
+                                                            onClick={() => setActiveTab('clients')}
+                                                            className="text-sm text-blue-400 hover:text-blue-300"
+                                                        >
+                                                            View all →
+                                                        </button>
+                                                    </div>
+                                                    <div className="p-2">
+                                                        {clients.length === 0 ? (
+                                                            <div className="p-6 text-center text-slate-500">No clients yet</div>
+                                                        ) : (
+                                                            clients.slice(0, 5).map(client => (
+                                                                <div 
+                                                                    key={client.id}
+                                                                    className="p-3 hover:bg-slate-700/30 rounded-lg cursor-pointer transition-colors flex items-center justify-between"
+                                                                    onClick={() => setSelectedClient(client)}
+                                                                >
+                                                                    <div>
+                                                                        <p className="text-white font-medium">{client.company_name}</p>
+                                                                        <p className="text-slate-500 text-sm">{client.industry || 'No industry'}</p>
+                                                                    </div>
+                                                                    <StatusBadge status={client.status} />
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* Recent Analyses */}
+                                                <div className="bg-slate-850 border border-slate-700/50 rounded-xl">
+                                                    <div className="p-5 border-b border-slate-700/50">
+                                                        <h3 className="font-semibold text-white">Recent Analyses</h3>
+                                                    </div>
+                                                    <div className="p-2">
+                                                        {analyses.length === 0 ? (
+                                                            <div className="p-6 text-center text-slate-500">No analyses yet</div>
+                                                        ) : (
+                                                            analyses.slice(0, 5).map(analysis => (
+                                                                <div 
+                                                                    key={analysis.id}
+                                                                    className="p-3 hover:bg-slate-700/30 rounded-lg transition-colors cursor-pointer flex items-center justify-between"
+                                                                    onClick={() => setSelectedAnalysis(analysis)}
+                                                                >
+                                                                    <div>
+                                                                        <p className="text-white font-medium">
+                                                                            {analysis.findings?.executive_summary?.substring(0, 40) || 'Analysis'}...
+                                                                        </p>
+                                                                        <p className="text-slate-500 text-sm mono">
+                                                                            {new Date(analysis.created_at).toLocaleDateString()}
+                                                                        </p>
+                                                                    </div>
+                                                                    <StatusBadge status={analysis.status} />
+                                                                </div>
+                                                            ))
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Clients View */}
+                                    {activeTab === 'clients' && (
+                                        <div className="space-y-6 animate-fade-in">
+                                            {/* Search */}
+                                            <div className="relative">
+                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+                                                    {Icons.search}
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search clients..."
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    className="w-full bg-slate-850 border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                                                />
+                                            </div>
+                                            
+                                            {/* Clients Table */}
+                                            <div className="bg-slate-850 border border-slate-700/50 rounded-xl overflow-hidden">
+                                                <table className="w-full">
+                                                    <thead>
+                                                        <tr className="border-b border-slate-700/50">
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Company</th>
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Contact</th>
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Industry</th>
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Employees</th>
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                                                            <th className="text-right px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {filteredClients.length === 0 ? (
+                                                            <tr>
+                                                                <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                                                                    {searchTerm ? 'No clients match your search' : 'No clients yet. Add your first client to get started.'}
+                                                                </td>
+                                                            </tr>
+                                                        ) : (
+                                                            filteredClients.map((client, idx) => (
+                                                                <tr 
+                                                                    key={client.id}
+                                                                    className={`border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors cursor-pointer ${idx % 2 === 0 ? '' : 'bg-slate-900/20'}`}
+                                                                    onClick={() => setSelectedClient(client)}
+                                                                >
+                                                                    <td className="px-6 py-4">
+                                                                        <p className="text-white font-medium">{client.company_name}</p>
+                                                                    </td>
+                                                                    <td className="px-6 py-4">
+                                                                        <p className="text-white">{client.contact_name || '—'}</p>
+                                                                        <p className="text-slate-500 text-sm">{client.contact_email || ''}</p>
+                                                                    </td>
+                                                                    <td className="px-6 py-4 text-slate-300">{client.industry || '—'}</td>
+                                                                    <td className="px-6 py-4 text-slate-300 mono">{client.employee_count?.toLocaleString() || '—'}</td>
+                                                                    <td className="px-6 py-4"><StatusBadge status={client.status} /></td>
+                                                                    <td className="px-6 py-4 text-right">
+                                                                        <div className="flex items-center justify-end gap-2" onClick={e => e.stopPropagation()}>
+                                                                            <button 
+                                                                                className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                                                                                onClick={() => setAnalyzeClient(client)}
+                                                                                title="Upload & Analyze"
+                                                                            >
+                                                                                {Icons.sparkles}
+                                                                            </button>
+                                                                            <button 
+                                                                                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+                                                                                onClick={() => setSelectedClient(client)}
+                                                                            >
+                                                                                {Icons.eye}
+                                                                            </button>
+                                                                            <button 
+                                                                                className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                                                                onClick={() => handleDeleteClient(client.id)}
+                                                                            >
+                                                                                {Icons.trash}
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Uploads View */}
+                                    {activeTab === 'uploads' && (
+                                        <div className="space-y-6 animate-fade-in">
+                                            <div className="bg-slate-850 border border-slate-700/50 rounded-xl overflow-hidden">
+                                                <table className="w-full">
+                                                    <thead>
+                                                        <tr className="border-b border-slate-700/50">
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">File Name</th>
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Type</th>
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Uploaded</th>
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {uploads.length === 0 ? (
+                                                            <tr>
+                                                                <td colSpan="4" className="px-6 py-12 text-center text-slate-500">
+                                                                    No uploads yet
+                                                                </td>
+                                                            </tr>
+                                                        ) : (
+                                                            uploads.map((upload, idx) => (
+                                                                <tr 
+                                                                    key={upload.id}
+                                                                    className={`border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors ${idx % 2 === 0 ? '' : 'bg-slate-900/20'}`}
+                                                                >
+                                                                    <td className="px-6 py-4 text-white font-medium">{upload.file_name}</td>
+                                                                    <td className="px-6 py-4 text-slate-300 mono text-sm">{upload.file_type || '—'}</td>
+                                                                    <td className="px-6 py-4 text-slate-300 mono text-sm">{new Date(upload.uploaded_at).toLocaleString()}</td>
+                                                                    <td className="px-6 py-4"><StatusBadge status={upload.status} /></td>
+                                                                </tr>
+                                                            ))
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Analyses View */}
+                                    {activeTab === 'analyses' && (
+                                        <div className="space-y-6 animate-fade-in">
+                                            <div className="bg-slate-850 border border-slate-700/50 rounded-xl overflow-hidden">
+                                                <table className="w-full">
+                                                    <thead>
+                                                        <tr className="border-b border-slate-700/50">
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Summary</th>
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Created</th>
+                                                            <th className="text-left px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                                                            <th className="text-right px-6 py-4 text-sm font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {analyses.length === 0 ? (
+                                                            <tr>
+                                                                <td colSpan="4" className="px-6 py-12 text-center text-slate-500">
+                                                                    No analyses yet
+                                                                </td>
+                                                            </tr>
+                                                        ) : (
+                                                            analyses.map((analysis, idx) => (
+                                                                <tr 
+                                                                    key={analysis.id}
+                                                                    className={`border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors cursor-pointer ${idx % 2 === 0 ? '' : 'bg-slate-900/20'}`}
+                                                                    onClick={() => setSelectedAnalysis(analysis)}
+                                                                >
+                                                                    <td className="px-6 py-4 text-white">
+                                                                        {analysis.findings?.executive_summary?.substring(0, 60) || 'Analysis'}
+                                                                        {(analysis.findings?.executive_summary?.length || 0) > 60 ? '...' : ''}
+                                                                    </td>
+                                                                    <td className="px-6 py-4 text-slate-300 mono text-sm">{new Date(analysis.created_at).toLocaleString()}</td>
+                                                                    <td className="px-6 py-4"><StatusBadge status={analysis.status} /></td>
+                                                                    <td className="px-6 py-4 text-right">
+                                                                        <button 
+                                                                            className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+                                                                            onClick={(e) => { e.stopPropagation(); setSelectedAnalysis(analysis); }}
+                                                                        >
+                                                                            {Icons.eye}
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            ))
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {/* Add Client Modal */}
+                    <Modal isOpen={showAddClient} onClose={() => setShowAddClient(false)} title="Add New Client">
+                        <AddClientForm onSubmit={handleAddClient} onCancel={() => setShowAddClient(false)} />
+                    </Modal>
+                    
+                    {/* Upload & Analyze Modal */}
+                    <Modal 
+                        isOpen={!!analyzeClient} 
+                        onClose={() => setAnalyzeClient(null)} 
+                        title={`Analyze: ${analyzeClient?.company_name || ''}`}
+                        wide
+                    >
+                        {analyzeClient && (
+                            <UploadAnalyze 
+                                client={analyzeClient}
+                                onComplete={() => { setAnalyzeClient(null); fetchData(); }}
+                                onCancel={() => setAnalyzeClient(null)}
+                            />
+                        )}
+                    </Modal>
+                    
+                    {/* Client Detail Slide-over */}
+                    {selectedClient && (
+                        <ClientDetail
+                            client={selectedClient}
+                            uploads={uploads}
+                            analyses={analyses}
+                            onClose={() => setSelectedClient(null)}
+                            onRefresh={fetchData}
+                            onUploadAnalyze={(client) => { setSelectedClient(null); setAnalyzeClient(client); }}
+                        />
+                    )}
+                    
+                    {/* Analysis Detail Slide-over */}
+                    {selectedAnalysis && !selectedClient && (
+                        <AnalysisDetail
+                            analysis={selectedAnalysis}
+                            onClose={() => setSelectedAnalysis(null)}
+                        />
+                    )}
+                </div>
+            );
+        };
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "canon-echo-admin",
+  "version": "1.0.0",
+  "description": "Canon Echo Admin Dashboard with Claude API Integration",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0"
+  }
+}
